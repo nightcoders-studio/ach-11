@@ -100,12 +100,12 @@ async def mock_topup(
     user_id = user_data["user_id"]
     amount = request.amount
 
-    # Hanya terima preset tertentu (simulasi agar balance tidak di abuse)
-    allowed_presets = [0.60, 3.00, 6.00]  # Ekuivalen Rp 10k, 50k, 100k
+    # Hanya terima preset tertentu atau nominal custom yang valid (simulasi agar balance tidak di abuse)
+    allowed_presets = [0.60, 3.00, 6.00, 0.625, 3.125, 6.25, 15.00, 15.625, 30.00, 31.25]
     # Longgarkan presisi toleransi floating point
     is_preset = any(abs(amount - p) < 0.01 for p in allowed_presets)
-    if not is_preset:
-         raise HTTPException(status_code=400, detail={"error": "invalid_amount", "message": "Top up hanya diizinkan menggunakan nominal simulasi: $0.60, $3.00, atau $6.00"})
+    if not is_preset and not (0.10 <= amount <= 1000.0):
+         raise HTTPException(status_code=400, detail={"error": "invalid_amount", "message": "Top up hanya diizinkan menggunakan nominal preset atau nominal custom valid antara $0.10 - $1000"})
 
     # 1. Update wallet balance
     # Cari wallet user
