@@ -50,6 +50,9 @@ const AVAILABLE_MODELS = [
     { id: "openai/gpt-4o-mini", label: "GPT-4o Mini" },
     { id: "anthropic/claude-3-haiku", label: "Claude 3 Haiku" },
   ]},
+  { group: "LM Studio (Pengujian Lokal)", models: [
+    { id: "lmstudio/liquid/lfm2.5-1.2b", label: "Liquid LFM 2.5 1.2B (Local)" },
+  ]},
 ];
 
 export default function PlaygroundTab({ session, onUpdateSession, onAddUsageLog }: PlaygroundTabProps) {

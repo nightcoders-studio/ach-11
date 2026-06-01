@@ -43,7 +43,8 @@ class ChatRequest(BaseModel):
             "openrouter/cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
             "openrouter/meta-llama/llama-3.3-70b-instruct:free",
             "openrouter/meta-llama/llama-3.2-3b-instruct:free",
-            "openrouter/nousresearch/hermes-3-llama-3.1-405b:free"
+            "openrouter/nousresearch/hermes-3-llama-3.1-405b:free",
+            "lmstudio/liquid/lfm2.5-1.2b"
         ]
         if v not in allowed:
             raise ValueError(f"Model '{v}' tidak didukung atau belum terdaftar.")

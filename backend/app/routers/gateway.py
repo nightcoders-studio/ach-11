@@ -57,6 +57,8 @@ async def chat_completions(
 
             # Iterasi stream chunks
             async for chunk in litellm_stream:
+                if not chunk.choices:
+                    continue
                 # LiteLLM format mapping
                 delta = chunk.choices[0].delta
                 if delta and delta.content:
@@ -131,18 +133,42 @@ async def list_models(key_data: dict = Depends(validate_api_key)):
     """
     Mengembalikan daftar model AI yang terdaftar di database.
     """
-    res = supabase.table("model_pricing").select("*").eq("is_active", True).execute()
-    models = []
-    for m in res.data:
-        models.append(ModelInfo(
-            id=m["model_id"],
-            display_name=m["display_name"],
-            provider=m["provider"],
-            input_price_per_1k_usd=float(m["input_price_per_1k"]),
-            output_price_per_1k_usd=float(m["output_price_per_1k"]),
-            context_window=m.get("context_window")
-        ))
-    return {"data": models}
+    try:
+        res = supabase.table("model_pricing").select("*").eq("is_active", True).execute()
+        models = []
+        for m in res.data:
+            models.append(ModelInfo(
+                id=m["model_id"],
+                display_name=m["display_name"],
+                provider=m["provider"],
+                input_price_per_1k_usd=float(m["input_price_per_1k"]),
+                output_price_per_1k_usd=float(m["output_price_per_1k"]),
+                context_window=m.get("context_window")
+            ))
+        return {"data": models}
+    except Exception as e:
+        logger.warning(f"Gagal mengambil model list dari database: {str(e)}")
+        fallback_ids = [
+            ("gemini/gemini-1.5-flash", "Gemini 1.5 Flash", "google", 0.000075, 0.000300, 1000000),
+            ("gemini/gemini-1.5-pro", "Gemini 1.5 Pro", "google", 0.003500, 0.010500, 2000000),
+            ("openai/gpt-3.5-turbo", "GPT-3.5 Turbo", "openai", 0.000500, 0.001500, 16385),
+            ("openai/gpt-4o-mini", "GPT-4o Mini", "openai", 0.000150, 0.000600, 128000),
+            ("anthropic/claude-3-haiku", "Claude 3 Haiku", "anthropic", 0.000250, 0.001250, 200000),
+            ("openrouter/google/gemini-2.0-flash-lite-preview-02-05:free", "Gemini 2.0 Flash Lite Preview (Free)", "openrouter", 0.0, 0.0, 1048576),
+            ("openrouter/poolside/laguna-m.1:free", "Poolside Laguna M.1 (Free)", "openrouter", 0.0, 0.0, 32768),
+            ("lmstudio/liquid/lfm2.5-1.2b", "Liquid LFM 2.5 1.2B (LM Studio)", "lmstudio", 0.0, 0.0, 32768)
+        ]
+        models = [
+            ModelInfo(
+                id=fid,
+                display_name=name,
+                provider=prov,
+                input_price_per_1k_usd=inp,
+                output_price_per_1k_usd=out,
+                context_window=cw
+            ) for fid, name, prov, inp, out, cw in fallback_ids
+        ]
+        return {"data": models}
 
 @router.get("/health")
 async def health_check():

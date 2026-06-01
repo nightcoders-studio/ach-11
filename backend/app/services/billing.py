@@ -16,27 +16,30 @@ async def get_model_pricing(model_id: str) -> dict:
     if model_id in _pricing_cache:
         return _pricing_cache[model_id]
 
-    res = supabase.table("model_pricing").select("*").eq("model_id", model_id).eq("is_active", True).execute()
-    if not res.data:
+    try:
+        res = supabase.table("model_pricing").select("*").eq("model_id", model_id).eq("is_active", True).execute()
+        if not res.data:
+            raise ValueError("Model tidak ditemukan di database.")
+        pricing = res.data[0]
+        # Konversi data numerik dari Decimal ke float
+        pricing_dict = {
+            "model_id": pricing["model_id"],
+            "input_price_per_1k": float(pricing["input_price_per_1k"]),
+            "output_price_per_1k": float(pricing["output_price_per_1k"]),
+            "markup_rate": float(pricing["markup_rate"]),
+            "provider": pricing["provider"]
+        }
+    except Exception as e:
+        logger.warning(f"Gagal mengambil pricing dari database untuk {model_id}, menggunakan fallback. Detail: {str(e)}")
         # Fallback pricing default jika model terlewat di database seeding
-        fallback = {
+        pricing_dict = {
             "model_id": model_id,
             "input_price_per_1k": 0.000150,
             "output_price_per_1k": 0.000600,
             "markup_rate": 1.20,
             "provider": "openrouter" if "openrouter" in model_id else "google"
         }
-        return fallback
 
-    pricing = res.data[0]
-    # Konversi data numerik dari Decimal ke float
-    pricing_dict = {
-        "model_id": pricing["model_id"],
-        "input_price_per_1k": float(pricing["input_price_per_1k"]),
-        "output_price_per_1k": float(pricing["output_price_per_1k"]),
-        "markup_rate": float(pricing["markup_rate"]),
-        "provider": pricing["provider"]
-    }
     _pricing_cache[model_id] = pricing_dict
     return pricing_dict
 
@@ -98,5 +101,51 @@ async def deduct_balance(
         }).execute()
         return bool(res.data)
     except Exception as e:
-        logger.error(f"Gagal melakukan post-billing deduction: {str(e)}")
-        return False
+        logger.warning(f"Gagal memanggil stored function deduct_balance_and_log: {str(e)}. Menggunakan REST fallback...")
+        try:
+            # Fallback jika stored function gagal (misal: kolom atau function belum di-patch di db)
+            wallet_res = supabase.table("wallets").select("*").eq("user_id", user_id).execute()
+            if not wallet_res.data:
+                return False
+            wallet = wallet_res.data[0]
+            current_balance = float(wallet["balance"])
+            if current_balance < cost_deducted:
+                return False
+            
+            # Update balance
+            new_balance = current_balance - cost_deducted
+            update_payload = {"balance": new_balance}
+            if "total_spent" in wallet:
+                update_payload["total_spent"] = float(wallet["total_spent"] or 0.0) + cost_deducted
+            
+            supabase.table("wallets").update(update_payload).eq("user_id", user_id).execute()
+            
+            # Log usage
+            try:
+                supabase.table("usage_logs").insert({
+                    "user_id": user_id,
+                    "api_key_id": api_key_id,
+                    "model_name": model_name,
+                    "provider": provider,
+                    "prompt_tokens": prompt_tokens,
+                    "completion_tokens": completion_tokens,
+                    "total_tokens": prompt_tokens + completion_tokens,
+                    "cost_usd": cost_usd,
+                    "cost_deducted": cost_deducted,
+                    "request_id": request_id,
+                    "latency_ms": latency_ms,
+                    "status": "success"
+                }).execute()
+            except Exception as le:
+                logger.warning(f"Gagal mencatat log usage via fallback: {str(le)}")
+                
+            # Update api key last used
+            try:
+                supabase.table("api_keys").update({"last_used_at": "now()"}).eq("id", api_key_id).execute()
+            except Exception:
+                pass
+                
+            return True
+        except Exception as fe:
+            logger.error(f"Gagal melakukan post-billing fallback: {str(fe)}")
+            return False

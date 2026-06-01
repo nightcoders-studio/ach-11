@@ -115,31 +115,36 @@ async def mock_topup(
 
     wallet = res_wallet.data[0]
     new_balance = float(wallet["balance"]) + amount
-    new_total_topup = float(wallet["total_topup"]) + amount
 
-    update_res = supabase.table("wallets").update({
-        "balance": new_balance,
-        "total_topup": new_total_topup
-    }).eq("user_id", user_id).execute()
+    update_payload = {
+        "balance": new_balance
+    }
+    if "total_topup" in wallet:
+        update_payload["total_topup"] = float(wallet["total_topup"] or 0.0) + amount
+
+    update_res = supabase.table("wallets").update(update_payload).eq("user_id", user_id).execute()
 
     if not update_res.data:
         raise HTTPException(status_code=500, detail={"error": "db_error", "message": "Gagal memproses penambahan saldo"})
 
     # 2. Catat logs topup
-    supabase.table("topup_logs").insert({
-        "user_id": user_id,
-        "amount": amount,
-        "method": "SIMULATION",
-        "status": "completed",
-        "note": "Simulated balance replenishment from dashboard"
-    }).execute()
+    try:
+        supabase.table("topup_logs").insert({
+            "user_id": user_id,
+            "amount": amount,
+            "method": "SIMULATION",
+            "status": "completed",
+            "note": "Simulated balance replenishment from dashboard"
+        }).execute()
+    except Exception as e:
+        logger.warning(f"Gagal mencatat log topup: {str(e)}")
 
     updated_wallet = update_res.data[0]
     return WalletResponse(
         balance=float(updated_wallet["balance"]),
-        currency=updated_wallet["currency"],
-        total_spent=float(updated_wallet["total_spent"]),
-        total_topup=float(updated_wallet["total_topup"])
+        currency=updated_wallet.get("currency", "USD"),
+        total_spent=float(updated_wallet.get("total_spent", 0.0)),
+        total_topup=float(updated_wallet.get("total_topup", 0.0))
     )
 
 @router.get("/wallet", response_model=WalletResponse)
@@ -152,7 +157,7 @@ async def get_wallet(user_data: dict = Depends(verify_supabase_jwt)):
     w = res.data[0]
     return WalletResponse(
         balance=float(w["balance"]),
-        currency=w["currency"],
-        total_spent=float(w["total_spent"]),
-        total_topup=float(w["total_topup"])
+        currency=w.get("currency", "USD"),
+        total_spent=float(w.get("total_spent", 0.0)),
+        total_topup=float(w.get("total_topup", 0.0))
     )

@@ -60,13 +60,23 @@ async def http_exception_handler(request, exc: HTTPException):
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc: RequestValidationError):
+    sanitized_errors = []
+    for err in exc.errors():
+        sanitized_err = dict(err)
+        if "ctx" in sanitized_err:
+            ctx = dict(sanitized_err["ctx"])
+            if "error" in ctx:
+                ctx["error"] = str(ctx["error"])
+            sanitized_err["ctx"] = ctx
+        sanitized_errors.append(sanitized_err)
+
     return JSONResponse(
         status_code=422,
         content={
             "error": "validation_error",
             "status": 422,
             "message": "Validasi skema request payload gagal",
-            "detail": exc.errors()
+            "detail": sanitized_errors
         }
     )
 

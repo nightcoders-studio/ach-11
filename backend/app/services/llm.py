@@ -21,7 +21,9 @@ def get_mapped_model_string(model_id: str) -> str:
     """
     Memetakan model standar GateLLM ke format upstream provider milik LiteLLM/OpenRouter.
     """
-    if model_id.startswith("openrouter/"):
+    if model_id.startswith("lmstudio/"):
+        return f"openai/{model_id.replace('lmstudio/', '')}"
+    elif model_id.startswith("openrouter/"):
         # Misal: openrouter/google/gemini-2.0-flash-lite-preview-02-05:free
         # format LiteLLM untuk OpenRouter adalah "openrouter/<model-name-di-openrouter>"
         return model_id
@@ -59,6 +61,9 @@ async def stream_completion(model: str, messages: list, max_tokens: int, tempera
         # Jika settings.openrouter_api_key tidak ada di pool, tambahkan sebagai fallback terakhir
         if settings.openrouter_api_key and settings.openrouter_api_key not in OPENROUTER_KEYS:
             keys_to_try.append((settings.openrouter_api_key, -1))
+    elif model.startswith("lmstudio/"):
+        # LM Studio local key & endpoint
+        keys_to_try.append(("lm-studio", -2))
     else:
         # Provider non-OpenRouter (Gemini, OpenAI, Anthropic direct)
         keys_to_try.append((None, -1))
@@ -67,7 +72,7 @@ async def stream_completion(model: str, messages: list, max_tokens: int, tempera
     for api_key, key_idx in keys_to_try:
         try:
             logger.info(f"Mengirim request completion ke {mapped_model} menggunakan " + 
-                        (f"OpenRouter Key Index {key_idx}" if key_idx >= 0 else "Default Key"))
+                        (f"OpenRouter Key Index {key_idx}" if key_idx >= 0 else ("LM Studio Local Endpoint" if key_idx == -2 else "Default Key")))
             
             # Persiapkan parameter pemanggilan LiteLLM
             call_kwargs = {
@@ -81,6 +86,9 @@ async def stream_completion(model: str, messages: list, max_tokens: int, tempera
             # Gunakan key spesifik jika OpenRouter
             if model.startswith("openrouter/") and api_key:
                 call_kwargs["api_key"] = api_key
+            elif model.startswith("lmstudio/"):
+                call_kwargs["api_key"] = "lm-studio"
+                call_kwargs["api_base"] = "http://192.168.56.1:1234/v1"
 
             response = await litellm.acompletion(**call_kwargs)
             
