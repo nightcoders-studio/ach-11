@@ -193,7 +193,7 @@ async def deduct_balance(
 
         logger.info(f"[BILLING REST OK] Saldo berkurang: ${current_balance:.6f} → ${new_balance:.6f}")
 
-        # 2c. Catat log pemakaian
+        # 2c. Catat log pemakaian — coba full schema dulu, fallback ke minimal
         try:
             supabase.table("usage_logs").insert({
                 "user_id": user_id,
@@ -211,7 +211,24 @@ async def deduct_balance(
             }).execute()
             logger.info(f"[BILLING LOG] Usage log berhasil dicatat untuk {request_id}")
         except Exception as le:
-            logger.warning(f"[BILLING LOG WARN] Gagal mencatat usage_log: {str(le)}")
+            logger.warning(f"[BILLING LOG WARN] Full schema insert gagal ({str(le)}), mencoba schema minimal...")
+            # Fallback: insert minimal tanpa kolom opsional (untuk schema lama)
+            try:
+                supabase.table("usage_logs").insert({
+                    "user_id": user_id,
+                    "model_name": model_name,
+                    "provider": provider,
+                    "prompt_tokens": prompt_tokens,
+                    "completion_tokens": completion_tokens,
+                    "total_tokens": prompt_tokens + completion_tokens,
+                    "cost_usd": cost_usd,
+                    "cost_deducted": cost_deducted,
+                    "latency_ms": latency_ms,
+                    "status": "success"
+                }).execute()
+                logger.info(f"[BILLING LOG] Usage log (schema minimal) berhasil dicatat untuk {request_id}")
+            except Exception as le2:
+                logger.warning(f"[BILLING LOG WARN] Schema minimal juga gagal ({str(le2)}), skip log.")
 
         # 2d. Update last_used_at pada api_key
         try:
