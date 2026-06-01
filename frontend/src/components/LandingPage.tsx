@@ -45,15 +45,15 @@ export default function LandingPage({ onLogin }: LandingPageProps) {
         
         if (data && data.user) {
           // Fetch wallet balance
-          const walletRes = await supabase.table("wallets").select("balance, total_spent, total_topup").eq("user_id", data.user.id).single();
+          const walletRes = await supabase.table("wallets").select("balance").eq("user_id", data.user.id).single();
           const balance = walletRes.data ? parseFloat(walletRes.data.balance) * 16000 : 0; // standard multiplier/simulated IDR
           
           onLogin({
             name: data.user.email?.split("@")[0] || "Developer",
             email: data.user.email || "",
             balance: balance || 5000,
-            totalSpent: walletRes.data ? parseFloat(walletRes.data.total_spent) * 16000 : 0,
-            totalTokens: walletRes.data ? (parseFloat(walletRes.data.total_spent) * 0.08) : 0
+            totalSpent: 0,
+            totalTokens: 0
           });
         }
       } else {

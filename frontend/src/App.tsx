@@ -71,7 +71,7 @@ export default function App() {
     try {
       const { data, error } = await supabase
         .from("wallets")
-        .select("balance, total_spent, total_topup")
+        .select("balance")
         .eq("user_id", userId)
         .single();
       
@@ -80,8 +80,8 @@ export default function App() {
           name: email.split("@")[0],
           email: email,
           balance: parseFloat(data.balance) * 16000, // simulated IDR rate multiplier
-          totalSpent: parseFloat(data.total_spent) * 16000,
-          totalTokens: parseFloat(data.total_spent) * 0.08
+          totalSpent: 0,
+          totalTokens: 0
         });
       } else {
         // Fallback default mock
@@ -155,8 +155,8 @@ export default function App() {
           setSession(prev => prev ? {
             ...prev,
             balance: parseFloat(payload.new.balance) * 16000,
-            totalSpent: parseFloat(payload.new.total_spent) * 16000,
-            totalTokens: parseFloat(payload.new.total_spent) * 0.08
+            totalSpent: parseFloat(payload.new.total_spent || 0) * 16000,
+            totalTokens: parseFloat(payload.new.total_spent || 0) * 0.08
           } : null);
         }
       })
