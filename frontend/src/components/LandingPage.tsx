@@ -45,7 +45,7 @@ export default function LandingPage({ onLogin }: LandingPageProps) {
         
         if (data && data.user) {
           // Fetch wallet balance
-          const walletRes = await supabase.table("wallets").select("balance").eq("user_id", data.user.id).single();
+          const walletRes = await supabase.from("wallets").select("balance").eq("user_id", data.user.id).single();
           const balance = walletRes.data ? parseFloat(walletRes.data.balance) * 16000 : 0; // standard multiplier/simulated IDR
           
           onLogin({
