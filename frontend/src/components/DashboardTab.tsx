@@ -322,17 +322,17 @@ export default function DashboardTab({ session, usageLogs, onNavigate }: Dashboa
                   <div className="flex items-end gap-0.5 w-full justify-center px-1">
                     {/* Gemini Bar */}
                     <div 
-                      className={`w-2 rounded-t bg-cyan-500 transition-all duration-300 ${isHovered ? "brightness-125 saturate-120 scale-y-105" : "opacity-80"}`}
+                      className={`w-2 rounded-t bg-cyan-500 transition-all duration-300 ${isHovered ? "brightness-125 saturate-150 scale-y-105" : "opacity-80"}`}
                       style={{ height: `${Math.max(gHeight, 4)}px` }}
                     ></div>
                     {/* OpenAI Bar */}
                     <div 
-                      className={`w-2 rounded-t bg-emerald-500 transition-all duration-300 ${isHovered ? "brightness-125 saturate-120 scale-y-105" : "opacity-80"}`}
+                      className={`w-2 rounded-t bg-emerald-500 transition-all duration-300 ${isHovered ? "brightness-125 saturate-150 scale-y-105" : "opacity-80"}`}
                       style={{ height: `${Math.max(oHeight, 4)}px` }}
                     ></div>
                     {/* Claude Bar */}
                     <div 
-                      className={`w-2 rounded-t bg-amber-500 transition-all duration-300 ${isHovered ? "brightness-125 saturate-120 scale-y-105" : "opacity-80"}`}
+                      className={`w-2 rounded-t bg-amber-500 transition-all duration-300 ${isHovered ? "brightness-125 saturate-150 scale-y-105" : "opacity-80"}`}
                       style={{ height: `${Math.max(cHeight, 4)}px` }}
                     ></div>
                   </div>

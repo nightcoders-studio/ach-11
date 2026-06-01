@@ -205,7 +205,7 @@ export default function BillingTab({ session, transactions, onTopUp }: BillingTa
             </div>
           </div>
 
-          <div className="p-4.5 bg-cyan-950/20 border border-cyan-500/20 rounded-xl flex gap-3 text-xs text-cyan-300">
+          <div className="p-4 bg-cyan-950/20 border border-cyan-500/20 rounded-xl flex gap-3 text-xs text-cyan-300">
             <AlertCircle className="w-5 h-5 text-cyan-400 shrink-0" />
             <p className="leading-relaxed text-slate-400">
               Saldo KedaiAI tidak hangus atau kadaluarsa. Dana deposit dapat selalu digunakan kapan saja sepanjang akun developer Anda aktif di KedaiAI.

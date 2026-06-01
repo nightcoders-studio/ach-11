@@ -692,7 +692,7 @@ print(response.choices[0].message.content)`
             <div className="flex flex-row lg:flex-col gap-1.5 overflow-x-auto pb-2 lg:pb-0 scrollbar-none lg:overflow-x-visible">
               <button
                 onClick={() => setSelectedEndpoint("chat")}
-                className={`flex-1 lg:flex-initial text-left p-2.5 rounded-lg flex items-center justify-between gap-2 text-xs transition min-w-[145px] lg:min-w-0 ${selectedEndpoint === "chat" ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/15 font-bold animate-pulse-subtle" : "text-slate-400 hover:text-white border border-transparent"}`}
+                className={`flex-1 lg:flex-initial text-left p-2.5 rounded-lg flex items-center justify-between gap-2 text-xs transition min-w-[145px] lg:min-w-0 ${selectedEndpoint === "chat" ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/15 font-bold animate-pulse" : "text-slate-400 hover:text-white border border-transparent"}`}
               >
                 <span className="flex items-center gap-2 min-w-0">
                   <span className="px-1.5 py-0.5 bg-cyan-950 text-cyan-400 rounded text-[9px] font-bold border border-cyan-500/10 shrink-0">POST</span>

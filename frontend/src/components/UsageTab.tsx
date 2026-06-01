@@ -26,7 +26,7 @@ export default function UsageTab({ usageLogs }: UsageTabProps) {
     const name = modelName.toLowerCase();
     
     if (name.endsWith(":free")) {
-      return { input: 0.001 * multiplier, output: 0.002 * multiplier };
+      return { input: 0, output: 0 };
     } else if (name.includes("gemini-1.5-flash")) {
       return { input: 0.000075 * multiplier, output: 0.000300 * multiplier };
     } else if (name.includes("gemini-1.5-pro")) {
@@ -119,7 +119,7 @@ export default function UsageTab({ usageLogs }: UsageTabProps) {
   };
 
   const formatRupiah = (val: number) => {
-    return val.toLocaleString("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return val.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 });
   };
 
   return (

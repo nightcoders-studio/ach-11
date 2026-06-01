@@ -69,25 +69,22 @@ export default function App() {
 
   const fetchWalletData = async (userId: string, email: string) => {
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("wallets")
-        .select("balance, total_spent")
+        .select("balance")
         .eq("user_id", userId)
         .single();
       
-      if (error) {
-        console.warn("[WALLET INIT] Query error:", error.message);
-      }
       if (data) {
         setSession({
           name: email.split("@")[0],
           email: email,
-          balance: parseFloat(data.balance) * 16000,
-          totalSpent: parseFloat(data.total_spent || 0) * 16000,
+          balance: parseFloat(data.balance) * 16000, // simulated IDR rate multiplier
+          totalSpent: 0,
           totalTokens: 0
         });
       } else {
-        // Fallback default mock (Rp 5,000 = ~$0.3125)
+        // Fallback default mock
         setSession({
           name: email.split("@")[0],
           email: email,
@@ -97,7 +94,7 @@ export default function App() {
         });
       }
     } catch (e) {
-      console.error("[WALLET INIT] Gagal:", e);
+      console.error("Gagal mengambil data wallet:", e);
     }
   };
 
@@ -106,23 +103,18 @@ export default function App() {
     try {
       const { data: { session: sbSession } } = await supabase.auth.getSession();
       if (!sbSession?.user) return;
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("wallets")
-        .select("balance, total_spent")
+        .select("balance")
         .eq("user_id", sbSession.user.id)
         .single();
-      if (error) {
-        console.warn("[WALLET REFRESH] Query error:", error.message);
-        return;
-      }
       if (data) {
         const newBalanceIDR = parseFloat(data.balance) * 16000;
-        const newSpentIDR = parseFloat(data.total_spent || 0) * 16000;
-        console.log(`[WALLET REFRESH] Saldo: Rp ${newBalanceIDR.toLocaleString()}, Terpakai: Rp ${newSpentIDR.toLocaleString()}`);
-        setSession(prev => prev ? { ...prev, balance: newBalanceIDR, totalSpent: newSpentIDR } : null);
+        console.log(`[WALLET REFRESH] Saldo terbaru dari DB: Rp ${newBalanceIDR.toLocaleString()}`);
+        setSession(prev => prev ? { ...prev, balance: newBalanceIDR } : null);
       }
     } catch (e) {
-      console.warn("[WALLET REFRESH] Gagal:", e);
+      console.warn("refreshWalletBalance gagal:", e);
     }
   };
 
@@ -132,7 +124,7 @@ export default function App() {
 
     const fetchKeysAndLogs = async () => {
       // 1. Fetch API Keys
-      const { data: keys } = await supabase.from("api_keys").select("*").eq("status", "active").order("created_at", { ascending: false });
+      const { data: keys } = await supabase.from("api_keys").select("*").order("created_at", { ascending: false });
       if (keys) {
         setApiKeys(keys.map(k => ({
           id: k.id,
@@ -244,6 +236,7 @@ export default function App() {
 
   const handleCreateKey = async (name: string): Promise<ApiKey> => {
     if (!supabaseToken) {
+      // Fallback local key generation untuk Demo Mode
       const mockKey: ApiKey = {
         id: `key_${Math.random().toString(36).substring(2, 10)}`,
         name: name,
@@ -252,12 +245,11 @@ export default function App() {
         createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
         lastUsedAt: "-"
       };
-      const rawKey = "glm_mock_" + Array.from({length: 24}, () => Math.random().toString(36)[2]).join('');
-      sessionStorage.setItem(`glm_raw_${mockKey.id}`, rawKey);
       setApiKeys(prev => [mockKey, ...prev]);
-      return { ...mockKey, rawKey };
+      return { ...mockKey, rawKey: "glm_mock_" + Array.from({length: 24}, () => Math.random().toString(36)[2]).join('') };
     }
     
+    // Panggil real API backend
     const res = await fetch(`${API_BASE_URL}/dashboard/api-keys`, {
       method: "POST",
       headers: {
@@ -279,16 +271,14 @@ export default function App() {
       lastUsedAt: "-"
     };
 
-    sessionStorage.setItem(`glm_raw_${data.id}`, data.raw_key);
     setApiKeys(prev => [newKey, ...prev]);
     return { ...newKey, rawKey: data.raw_key };
   };
 
   const handleRevokeKey = async (id: string) => {
-    sessionStorage.removeItem(`glm_raw_${id}`);
-
     if (!supabaseToken) {
-      setApiKeys(prev => prev.filter(k => k.id !== id));
+      // Fallback local key revocation untuk Demo Mode
+      setApiKeys(prev => prev.map(k => k.id === id ? { ...k, status: "Revoked" } : k));
       return;
     }
 
@@ -299,7 +289,7 @@ export default function App() {
       }
     });
 
-    setApiKeys(prev => prev.filter(k => k.id !== id));
+    setApiKeys(prev => prev.map(k => k.id === id ? { ...k, status: "Revoked" } : k));
   };
 
   const handleTopUp = async (amount: number, method: string) => {
@@ -448,7 +438,7 @@ export default function App() {
             </div>
             <div>
               <span className="font-mono font-black text-lg tracking-tight text-white flex items-center leading-none">
-                Kedai<span className="text-cyan-400">Ai</span>
+                Gate<span className="text-cyan-400">LLM</span>
               </span>
               <span className="text-[9px] text-slate-500 font-mono tracking-wider block uppercase mt-1">Console Panel v1.0</span>
             </div>
