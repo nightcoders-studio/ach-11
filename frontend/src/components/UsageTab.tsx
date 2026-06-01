@@ -1,16 +1,12 @@
 import { useState } from "react";
 import { 
-  Cpu, 
   Activity, 
   Clock, 
   Download, 
   Search, 
-  Filter, 
   CheckCircle, 
-  XCircle, 
   HelpCircle,
   Coins,
-  ArrowUpRight,
   Sparkles
 } from "lucide-react";
 import { UsageLog } from "../types";
@@ -20,24 +16,51 @@ interface UsageTabProps {
 }
 
 export default function UsageTab({ usageLogs }: UsageTabProps) {
-  const [modelFilter, setModelFilter] = useState<"all" | "gemini-3.5-flash" | "gpt-4o" | "claude-3-5-sonnet">("all");
+  const [modelFilter, setModelFilter] = useState<"all" | "gemini" | "openai" | "claude" | "others">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedNotification, setCopiedNotification] = useState(false);
 
   const getModelRate = (modelName: string) => {
-    switch (modelName) {
-      case "gpt-4o":
-        return { input: 0.08, output: 0.24 };
-      case "claude-3-5-sonnet":
-        return { input: 0.05, output: 0.15 };
-      default:
-        return { input: 0.015, output: 0.045 };
+    // Return IDR price per 1 token (usd_price_per_1k / 1000 * 1.2 * 16000)
+    const multiplier = (1.2 * 16000) / 1000; // = 19.2
+    const name = modelName.toLowerCase();
+    
+    if (name.endsWith(":free")) {
+      return { input: 0, output: 0 };
+    } else if (name.includes("gemini-1.5-flash")) {
+      return { input: 0.000075 * multiplier, output: 0.000300 * multiplier };
+    } else if (name.includes("gemini-1.5-pro")) {
+      return { input: 0.003500 * multiplier, output: 0.010500 * multiplier };
+    } else if (name.includes("gpt-3.5-turbo")) {
+      return { input: 0.000500 * multiplier, output: 0.001500 * multiplier };
+    } else if (name.includes("gpt-4o-mini")) {
+      return { input: 0.000150 * multiplier, output: 0.000600 * multiplier };
+    } else if (name.includes("claude-3-haiku")) {
+      return { input: 0.000250 * multiplier, output: 0.001250 * multiplier };
+    } else if (name.includes("gpt-4o")) { // older mock
+      return { input: 0.005 * multiplier, output: 0.015 * multiplier };
+    } else if (name.includes("claude-3-5-sonnet")) { // older mock
+      return { input: 0.003 * multiplier, output: 0.009 * multiplier };
+    } else {
+      // default fallback
+      return { input: 0.0001 * multiplier, output: 0.0003 * multiplier };
     }
   };
 
-  // Filter logic
+  // Filter logic based on actual model names
   const filteredLogs = usageLogs.filter((log) => {
-    const matchesModel = modelFilter === "all" || log.modelName === modelFilter;
+    const nameLower = log.modelName.toLowerCase();
+    const matchesModel = 
+      modelFilter === "all" ||
+      (modelFilter === "gemini" && (nameLower.includes("gemini") || nameLower.includes("google"))) ||
+      (modelFilter === "openai" && (nameLower.includes("gpt") || nameLower.includes("openai"))) ||
+      (modelFilter === "claude" && (nameLower.includes("claude") || nameLower.includes("anthropic"))) ||
+      (modelFilter === "others" && 
+        !(nameLower.includes("gemini") || nameLower.includes("google")) &&
+        !(nameLower.includes("gpt") || nameLower.includes("openai")) &&
+        !(nameLower.includes("claude") || nameLower.includes("anthropic"))
+      );
+      
     const matchesSearch = log.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           log.modelName.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesModel && matchesSearch;
@@ -52,21 +75,32 @@ export default function UsageTab({ usageLogs }: UsageTabProps) {
     ? Math.round(filteredLogs.reduce((acc, log) => acc + log.latencyMs, 0) / totalCalls) 
     : 0;
 
-  // Pie chart replacement: beautiful custom percentage stacking bar
-  const geminiCount = filteredLogs.filter(l => l.modelName === "gemini-3.5-flash").length;
-  const gptCount = filteredLogs.filter(l => l.modelName === "gpt-4o").length;
-  const claudeCount = filteredLogs.filter(l => l.modelName === "claude-3-5-sonnet").length;
+  // Distribution stacking bar calculations
+  const geminiCount = filteredLogs.filter(l => {
+    const n = l.modelName.toLowerCase();
+    return n.includes("gemini") || n.includes("google");
+  }).length;
+  const gptCount = filteredLogs.filter(l => {
+    const n = l.modelName.toLowerCase();
+    return n.includes("gpt") || n.includes("openai");
+  }).length;
+  const claudeCount = filteredLogs.filter(l => {
+    const n = l.modelName.toLowerCase();
+    return n.includes("claude") || n.includes("anthropic");
+  }).length;
+  const othersCount = totalCalls - (geminiCount + gptCount + claudeCount);
 
-  const totalProportion = (geminiCount + gptCount + claudeCount) || 1;
+  const totalProportion = totalCalls || 1;
   const geminiPct = Math.round((geminiCount / totalProportion) * 100);
   const gptPct = Math.round((gptCount / totalProportion) * 100);
   const claudePct = Math.round((claudeCount / totalProportion) * 100);
+  const othersPct = Math.round((othersCount / totalProportion) * 100);
 
   const handleDownloadReport = () => {
     setCopiedNotification(true);
     setTimeout(() => setCopiedNotification(false), 2500);
 
-    // Create custom CSV file text download mockup
+    // Create CSV export file
     const header = "ID,Timestamp,Model,PromptTokens,CompletionTokens,CostIDR,LatencyMs,Status\n";
     const rows = filteredLogs.map(log => 
       `${log.id},${log.timestamp},${log.modelName},${log.promptTokens},${log.completionTokens},${log.costDeducted},${log.latencyMs},${log.status}`
@@ -107,7 +141,7 @@ export default function UsageTab({ usageLogs }: UsageTabProps) {
       {/* Info Banner: Fair 1 Token / Rp Billing model */}
       <div className="bg-cyan-950/20 border border-cyan-500/25 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-300">
         <div className="flex items-start sm:items-center gap-3">
-          <div className="p-2 bg-cyan-950 text-cyan-400 rounded-lg">
+          <div className="p-2 bg-cyan-950 text-cyan-400 rounded-lg shrink-0">
             <Sparkles className="w-4 h-4 animate-pulse" />
           </div>
           <div>
@@ -115,8 +149,9 @@ export default function UsageTab({ usageLogs }: UsageTabProps) {
             <span className="text-[11px] text-slate-400">Penggunaan router GateLLM dihitung murni serealistis tarif presisi token per token. Bebas dari biaya penalti minimum Rp 4 per API call.</span>
           </div>
         </div>
-        <div className="px-3 py-1.5 bg-cyan-950/60 rounded text-[10px] font-mono font-bold text-cyan-400 self-start sm:self-auto border border-cyan-500/10">
-          Uptime Rate: 99.98%
+        <div className="px-3 py-1.5 bg-cyan-950/60 rounded text-[10px] font-mono font-bold text-cyan-400 self-start sm:self-auto border border-cyan-500/10 flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+          <span>Realtime Sync: Active</span>
         </div>
       </div>
 
@@ -161,28 +196,37 @@ export default function UsageTab({ usageLogs }: UsageTabProps) {
           {geminiPct > 0 && (
             <div 
               style={{ width: `${geminiPct}%` }}
-              className="bg-cyan-400 flex items-center justify-center transition-all duration-550"
+              className="bg-cyan-400 flex items-center justify-center transition-all duration-500"
               title={`Gemini: ${geminiPct}%`}
             >
-              {geminiPct}%
+              {geminiPct > 5 && `${geminiPct}%`}
             </div>
           )}
           {gptPct > 0 && (
             <div 
               style={{ width: `${gptPct}%` }}
-              className="bg-emerald-400 flex items-center justify-center transition-all duration-550 border-l border-slate-950"
-              title={`GPT-4: ${gptPct}%`}
+              className="bg-emerald-400 flex items-center justify-center transition-all duration-500 border-l border-slate-950"
+              title={`OpenAI: ${gptPct}%`}
             >
-              {gptPct}%
+              {gptPct > 5 && `${gptPct}%`}
             </div>
           )}
           {claudePct > 0 && (
             <div 
               style={{ width: `${claudePct}%` }}
-              className="bg-amber-500 flex items-center justify-center transition-all duration-550 border-l border-slate-950"
+              className="bg-amber-500 flex items-center justify-center transition-all duration-500 border-l border-slate-950"
               title={`Claude: ${claudePct}%`}
             >
-              {claudePct}%
+              {claudePct > 5 && `${claudePct}%`}
+            </div>
+          )}
+          {othersPct > 0 && (
+            <div 
+              style={{ width: `${othersPct}%` }}
+              className="bg-purple-500 text-white flex items-center justify-center transition-all duration-500 border-l border-slate-950"
+              title={`Lainnya: ${othersPct}%`}
+            >
+              {othersPct > 5 && `${othersPct}%`}
             </div>
           )}
         </div>
@@ -198,6 +242,9 @@ export default function UsageTab({ usageLogs }: UsageTabProps) {
           <span className="flex items-center gap-2 text-slate-300">
             <span className="w-3 h-3 bg-amber-500 rounded-sm"></span> Claude 3.x Anthropic
           </span>
+          <span className="flex items-center gap-2 text-slate-300">
+            <span className="w-3 h-3 bg-purple-500 rounded-sm"></span> Lainnya / OpenRouter Free
+          </span>
         </div>
       </div>
 
@@ -206,9 +253,9 @@ export default function UsageTab({ usageLogs }: UsageTabProps) {
         
         {/* Filter header controls */}
         <div className="p-5 border-b border-slate-900 bg-slate-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <span className="text-xs text-slate-400 font-mono">Filter Model:</span>
-            <div className="flex items-center gap-1.5 font-mono text-[11px]">
+            <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px]">
               <button 
                 onClick={() => setModelFilter("all")}
                 className={`px-2.5 py-1 rounded transition ${modelFilter === "all" ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold" : "text-slate-400 hover:text-white"}`}
@@ -216,22 +263,28 @@ export default function UsageTab({ usageLogs }: UsageTabProps) {
                 All
               </button>
               <button 
-                onClick={() => setModelFilter("gemini-3.5-flash")}
-                className={`px-2.5 py-1 rounded transition ${modelFilter === "gemini-3.5-flash" ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold" : "text-slate-400"}`}
+                onClick={() => setModelFilter("gemini")}
+                className={`px-2.5 py-1 rounded transition ${modelFilter === "gemini" ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold" : "text-slate-400 hover:text-white"}`}
               >
-                Gemini Flash
+                Gemini
               </button>
               <button 
-                onClick={() => setModelFilter("gpt-4o")}
-                className={`px-2.5 py-1 rounded transition ${modelFilter === "gpt-4o" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold" : "text-slate-400"}`}
+                onClick={() => setModelFilter("openai")}
+                className={`px-2.5 py-1 rounded transition ${modelFilter === "openai" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold" : "text-slate-400 hover:text-white"}`}
               >
-                GPT-4o
+                OpenAI
               </button>
               <button 
-                onClick={() => setModelFilter("claude-3-5-sonnet")}
-                className={`px-2.5 py-1 rounded transition ${modelFilter === "claude-3-5-sonnet" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold" : "text-slate-400"}`}
+                onClick={() => setModelFilter("claude")}
+                className={`px-2.5 py-1 rounded transition ${modelFilter === "claude" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold" : "text-slate-400 hover:text-white"}`}
               >
                 Claude
+              </button>
+              <button 
+                onClick={() => setModelFilter("others")}
+                className={`px-2.5 py-1 rounded transition ${modelFilter === "others" ? "bg-purple-500/10 text-purple-400 border border-purple-500/20 font-bold" : "text-slate-400 hover:text-white"}`}
+              >
+                Lainnya
               </button>
             </div>
           </div>
@@ -259,7 +312,7 @@ export default function UsageTab({ usageLogs }: UsageTabProps) {
                 <th className="py-4 px-5 font-medium">MODEL ENDPOINT</th>
                 <th className="py-4 px-5 text-right font-medium">PROMPT</th>
                 <th className="py-4 px-5 text-right font-medium">COMPLETION</th>
-                <th className="py-4 px-5 text-right font-medium text-slate-400">TARIF RATIO (1 TKN/RP)</th>
+                <th className="py-4 px-5 text-right font-medium text-slate-500">TARIF RATIO (1 TKN/RP)</th>
                 <th className="py-4 px-5 text-right font-medium text-cyan-400">COST DEDUCTED</th>
                 <th className="py-4 px-5 text-right font-medium">LATENCY</th>
                 <th className="py-4 px-5 text-center font-medium">TRANSIT STATUS</th>
@@ -279,7 +332,7 @@ export default function UsageTab({ usageLogs }: UsageTabProps) {
                       <td className="py-4 px-5 text-right">{log.promptTokens.toLocaleString()} tkn</td>
                       <td className="py-4 px-5 text-right">{log.completionTokens.toLocaleString()} tkn</td>
                       <td className="py-4 px-5 text-right text-[10px] text-slate-400">
-                        In: Rp{rate.input.toFixed(3)} | Out: Rp{rate.output.toFixed(3)}
+                        In: Rp{rate.input.toFixed(4)} | Out: Rp{rate.output.toFixed(4)}
                       </td>
                       <td className="py-4 px-5 text-right text-cyan-400 font-bold">{formatRupiah(log.costDeducted)}</td>
                       <td className="py-4 px-5 text-right text-slate-400">{log.latencyMs} ms</td>

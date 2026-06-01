@@ -147,9 +147,9 @@ export default function App() {
 
     fetchKeysAndLogs();
 
-    // Subscribe to real-time wallet update channel
-    const walletChannel = supabase
-      .channel("schema-db-changes")
+    // Subscribe to real-time channels for wallet, usage logs, and top-up logs
+    const realtimeChannel = supabase
+      .channel("db-realtime-changes")
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "wallets" }, payload => {
         if (payload.new) {
           setSession(prev => prev ? {
@@ -160,10 +160,46 @@ export default function App() {
           } : null);
         }
       })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "usage_logs" }, payload => {
+        if (payload.new) {
+          const newLog: UsageLog = {
+            id: payload.new.id,
+            timestamp: payload.new.created_at.substring(0, 19).replace("T", " "),
+            modelName: payload.new.model_name,
+            promptTokens: payload.new.prompt_tokens,
+            completionTokens: payload.new.completion_tokens,
+            costDeducted: Math.ceil(parseFloat(payload.new.cost_deducted) * 16000),
+            latencyMs: payload.new.latency_ms || 250,
+            status: payload.new.status === "success" ? "Success" : "Error"
+          };
+          setUsageLogs(prev => {
+            // Avoid duplicates
+            if (prev.some(log => log.id === newLog.id)) return prev;
+            return [newLog, ...prev];
+          });
+        }
+      })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "topup_logs" }, payload => {
+        if (payload.new) {
+          const newTr: Transaction = {
+            id: payload.new.id.substring(0, 8).toUpperCase(),
+            timestamp: payload.new.created_at.substring(0, 19).replace("T", " "),
+            description: `Top Up via ${payload.new.method}`,
+            amount: Math.ceil(parseFloat(payload.new.amount) * 16000),
+            status: payload.new.status === "completed" ? "Success" : "Failed",
+            method: payload.new.method
+          };
+          setTransactions(prev => {
+            // Avoid duplicates
+            if (prev.some(tr => tr.id === newTr.id)) return prev;
+            return [newTr, ...prev];
+          });
+        }
+      })
       .subscribe();
 
     return () => {
-      supabase.removeChannel(walletChannel);
+      supabase.removeChannel(realtimeChannel);
     };
   }, [session?.email]);
 
@@ -282,16 +318,18 @@ export default function App() {
           balance: newBalance
         } : null);
 
-        // Register transaction locally to reflect instant update
-        const newTr: Transaction = {
-          id: `TR-${Date.now().toString(36).toUpperCase()}`,
-          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-          description: `Top Up via ${method}`,
-          amount: amount,
-          status: "Success",
-          method: method
-        };
-        setTransactions(prev => [newTr, ...prev]);
+        // Register transaction locally to reflect instant update (Mock/Demo Mode)
+        if (!supabaseToken) {
+          const newTr: Transaction = {
+            id: `TR-${Date.now().toString(36).toUpperCase()}`,
+            timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+            description: `Top Up via ${method}`,
+            amount: amount,
+            status: "Success",
+            method: method
+          };
+          setTransactions(prev => [newTr, ...prev]);
+        }
       } else {
         const errorData = await res.json().catch(() => ({}));
         console.error("Top-up request failed on backend:", res.status, errorData);
@@ -304,6 +342,7 @@ export default function App() {
   };
 
   const handleAddUsageLog = (log: UsageLog) => {
+    if (supabaseToken) return; // let realtime channel handle database updates
     setUsageLogs(prev => [log, ...prev]);
   };
 

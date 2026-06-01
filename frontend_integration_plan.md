@@ -174,35 +174,35 @@ const { data } = await supabase
 ## 📈 Timeline & Prioritas Integrasi (Timeline Hubung)
 
 ### Fase 1: Inisialisasi Klien & Env (1-2 Jam)
-- [ ] Instal dependency `@supabase/supabase-js` di frontend
-- [ ] Buat file config `.env` untuk memetakan `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, dan `VITE_API_BASE_URL`
-- [ ] Buat inisialisasi singleton helper `supabase.ts` di folder `src/lib/`
+- [x] Instal dependency `@supabase/supabase-js` di frontend
+- [x] Buat file config `.env` untuk memetakan `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, and `VITE_API_BASE_URL`
+- [x] Buat inisialisasi singleton helper `supabase.ts` di folder `src/lib/`
 
 ### Fase 2: Auth & State Bridge (3-4 Jam)
-- [ ] Ganti formulir registrasi & login landing page dengan Supabase Auth
-- [ ] Ganti local storage sync state di `App.tsx` agar reactive dengan session Supabase Auth
-- [ ] Buat auto-refresh data wallet balance dari supabase real-time subscription di sidebar
+- [x] Ganti formulir registrasi & login landing page dengan Supabase Auth
+- [x] Ganti local storage sync state di `App.tsx` agar reactive dengan session Supabase Auth
+- [x] Buat auto-refresh data wallet balance dari supabase real-time subscription di sidebar
 
 ### Fase 3: Dashboard Operations Integration (3-4 Jam)
-- [ ] Hubungkan modal generate key dan list key di `ApiKeysTab.tsx` ke endpoint backend
-- [ ] Ganti simulator top-up di `BillingTab.tsx` ke endpoint `/dashboard/topup` real
-- [ ] Alihkan rendering tabel `UsageTab.tsx` dan `DashboardTab.tsx` langsung membaca tabel `usage_logs` dari Supabase
+- [x] Hubungkan modal generate key dan list key di `ApiKeysTab.tsx` ke endpoint backend
+- [x] Ganti simulator top-up di `BillingTab.tsx` ke endpoint `/dashboard/topup` real
+- [x] Alihkan rendering tabel `UsageTab.tsx` dan `DashboardTab.tsx` langsung membaca tabel `usage_logs` dari Supabase
 
 ### Fase 4: Playground SSE Streaming Real (3-4 Jam)
-- [ ] Ubah stream fetcher di `PlaygroundTab.tsx` mengarah ke `/v1/chat/completions`
-- [ ] Tambahkan setup dropdown pilihan model real termasuk model OpenRouter gratis yang baru kita seeded
-- [ ] Ambil API key aktif user sebagai token bearer autentikasi saat playground chat berjalan
+- [x] Ubah stream fetcher di `PlaygroundTab.tsx` mengarah ke `/v1/chat/completions`
+- [x] Tambahkan setup dropdown pilihan model real termasuk model OpenRouter gratis yang baru kita seeded
+- [x] Ambil API key aktif user sebagai token bearer autentikasi saat playground chat berjalan
 
 ---
 
 ## 📋 Checklist Validasi E2E Integrasi
 
 ```
-□ SignUp/SignIn user baru menggunakan email/password real di LandingPage
-□ Cek Supabase DB: profil & wallet (saldo $0.00) terbuat via trigger
-□ Lakukan top-up simulasi $3.00 via BillingTab -> saldo bertambah di dashboard
-□ Generate API Key baru -> salin key mentah "glm_prod_xxx" yang muncul sekali
-□ Buka tab Playground -> pilih model "openrouter/google/gemini-2.0-flash-lite-preview-02-05:free"
-□ Kirim prompt -> respons streaming kata-demi-kata (SSE) berhasil dimuat
-□ Cek Dashboard -> Saldo terpotong akurat & Usage logs mencatat latensi + biaya dalam Rupiah
+[x] SignUp/SignIn user baru menggunakan email/password real di LandingPage
+[x] Cek Supabase DB: profil & wallet (saldo $0.00) terbuat via trigger
+[x] Lakukan top-up simulasi $3.00 via BillingTab -> saldo bertambah di dashboard
+[x] Generate API Key baru -> salin key mentah "glm_prod_xxx" yang muncul sekali
+[x] Buka tab Playground -> pilih model "openrouter/google/gemini-2.0-flash-lite-preview-02-05:free"
+[x] Kirim prompt -> respons streaming kata-demi-kata (SSE) berhasil dimuat
+[x] Cek Dashboard -> Saldo terpotong akurat & Usage logs mencatat latensi + biaya dalam Rupiah
 ```

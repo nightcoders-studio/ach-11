@@ -56,7 +56,7 @@ const AVAILABLE_MODELS = [
 ];
 
 export default function PlaygroundTab({ session, onUpdateSession, onAddUsageLog }: PlaygroundTabProps) {
-  const [model, setModel] = useState<string>("openrouter/google/gemini-2.0-flash-lite-preview-02-05:free");
+  const [model, setModel] = useState<string>("lmstudio/liquid/lfm2.5-1.2b");
   const [systemPrompt, setSystemPrompt] = useState("Anda adalah asisten AI teknis. Jawab dengan ringkas dalam bahasa Indonesia.");
   const [temperature, setTemperature] = useState(0.7);
   const [maxTokens] = useState(2048);
