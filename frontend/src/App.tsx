@@ -241,10 +241,10 @@ export default function App() {
 
     if (!supabaseToken) {
       // Fallback local balance top-up untuk Demo Mode
-      setSession({
-        ...session,
-        balance: session.balance + amount
-      });
+      setSession(prev => prev ? {
+        ...prev,
+        balance: prev.balance + amount
+      } : null);
 
       const newTr: Transaction = {
         id: `TR-${Date.now().toString(36).toUpperCase()}`,
@@ -260,33 +260,46 @@ export default function App() {
 
     // nominal slider ke USD conversion simulator rate
     const usdAmount = amount / 16000;
+    console.log(`Sending top-up request to backend: Rp ${amount} (${usdAmount} USD) via ${method}`);
 
-    const res = await fetch(`${API_BASE_URL}/dashboard/topup`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${supabaseToken}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ amount: usdAmount })
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      setSession({
-        ...session,
-        balance: parseFloat(data.balance) * 16000
+    try {
+      const res = await fetch(`${API_BASE_URL}/dashboard/topup`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${supabaseToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ amount: usdAmount })
       });
 
-      // Register transaction locally to reflect instant update
-      const newTr: Transaction = {
-        id: `TR-${Date.now().toString(36).toUpperCase()}`,
-        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-        description: `Top Up via ${method}`,
-        amount: amount,
-        status: "Success",
-        method: method
-      };
-      setTransactions(prev => [newTr, ...prev]);
+      if (res.ok) {
+        const data = await res.json();
+        const newBalance = parseFloat(data.balance) * 16000;
+        console.log(`Top-up successful! New balance returned: ${data.balance} USD (Rp ${newBalance})`);
+        
+        setSession(prev => prev ? {
+          ...prev,
+          balance: newBalance
+        } : null);
+
+        // Register transaction locally to reflect instant update
+        const newTr: Transaction = {
+          id: `TR-${Date.now().toString(36).toUpperCase()}`,
+          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+          description: `Top Up via ${method}`,
+          amount: amount,
+          status: "Success",
+          method: method
+        };
+        setTransactions(prev => [newTr, ...prev]);
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Top-up request failed on backend:", res.status, errorData);
+        alert(`Gagal top-up: ${errorData.message || "Unknown error"}`);
+      }
+    } catch (e: any) {
+      console.error("Top-up request connection error:", e);
+      alert(`Gagal menghubungi API Top Up: ${e.message}`);
     }
   };
 
