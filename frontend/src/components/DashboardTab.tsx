@@ -63,7 +63,7 @@ export default function DashboardTab({ session, usageLogs, onNavigate }: Dashboa
   const totalSpent = usageLogs.reduce((acc, log) => acc + log.costDeducted, 0);
 
   const formatRupiah = (val: number) => {
-    return val.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 });
+    return val.toLocaleString("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   // Dynamic 7-day usage aggregation

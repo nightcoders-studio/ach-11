@@ -69,22 +69,25 @@ export default function App() {
 
   const fetchWalletData = async (userId: string, email: string) => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("wallets")
-        .select("balance")
+        .select("balance, total_spent")
         .eq("user_id", userId)
         .single();
       
+      if (error) {
+        console.warn("[WALLET INIT] Query error:", error.message);
+      }
       if (data) {
         setSession({
           name: email.split("@")[0],
           email: email,
-          balance: parseFloat(data.balance) * 16000, // simulated IDR rate multiplier
-          totalSpent: 0,
+          balance: parseFloat(data.balance) * 16000,
+          totalSpent: parseFloat(data.total_spent || 0) * 16000,
           totalTokens: 0
         });
       } else {
-        // Fallback default mock
+        // Fallback default mock (Rp 5,000 = ~$0.3125)
         setSession({
           name: email.split("@")[0],
           email: email,
@@ -94,7 +97,7 @@ export default function App() {
         });
       }
     } catch (e) {
-      console.error("Gagal mengambil data wallet:", e);
+      console.error("[WALLET INIT] Gagal:", e);
     }
   };
 
@@ -103,18 +106,23 @@ export default function App() {
     try {
       const { data: { session: sbSession } } = await supabase.auth.getSession();
       if (!sbSession?.user) return;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("wallets")
-        .select("balance")
+        .select("balance, total_spent")
         .eq("user_id", sbSession.user.id)
         .single();
+      if (error) {
+        console.warn("[WALLET REFRESH] Query error:", error.message);
+        return;
+      }
       if (data) {
         const newBalanceIDR = parseFloat(data.balance) * 16000;
-        console.log(`[WALLET REFRESH] Saldo terbaru dari DB: Rp ${newBalanceIDR.toLocaleString()}`);
-        setSession(prev => prev ? { ...prev, balance: newBalanceIDR } : null);
+        const newSpentIDR = parseFloat(data.total_spent || 0) * 16000;
+        console.log(`[WALLET REFRESH] Saldo: Rp ${newBalanceIDR.toLocaleString()}, Terpakai: Rp ${newSpentIDR.toLocaleString()}`);
+        setSession(prev => prev ? { ...prev, balance: newBalanceIDR, totalSpent: newSpentIDR } : null);
       }
     } catch (e) {
-      console.warn("refreshWalletBalance gagal:", e);
+      console.warn("[WALLET REFRESH] Gagal:", e);
     }
   };
 
@@ -124,7 +132,7 @@ export default function App() {
 
     const fetchKeysAndLogs = async () => {
       // 1. Fetch API Keys
-      const { data: keys } = await supabase.from("api_keys").select("*").order("created_at", { ascending: false });
+      const { data: keys } = await supabase.from("api_keys").select("*").eq("status", "active").order("created_at", { ascending: false });
       if (keys) {
         setApiKeys(keys.map(k => ({
           id: k.id,
@@ -277,9 +285,10 @@ export default function App() {
   };
 
   const handleRevokeKey = async (id: string) => {
+    sessionStorage.removeItem(`glm_raw_${id}`);
+
     if (!supabaseToken) {
-      // Fallback local key revocation untuk Demo Mode
-      setApiKeys(prev => prev.map(k => k.id === id ? { ...k, status: "Revoked" } : k));
+      setApiKeys(prev => prev.filter(k => k.id !== id));
       return;
     }
 
@@ -290,7 +299,7 @@ export default function App() {
       }
     });
 
-    setApiKeys(prev => prev.map(k => k.id === id ? { ...k, status: "Revoked" } : k));
+    setApiKeys(prev => prev.filter(k => k.id !== id));
   };
 
   const handleTopUp = async (amount: number, method: string) => {

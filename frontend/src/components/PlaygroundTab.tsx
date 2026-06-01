@@ -233,6 +233,18 @@ export default function PlaygroundTab({ session, onUpdateSession, onAddUsageLog,
           if (data.startsWith("[ERROR]")) {
             try { const e = JSON.parse(data.slice(7)); throw new Error(e.message || "Stream error"); } catch (se: any) { throw se; }
           }
+          if (data.startsWith("[BILLING_ERROR]")) {
+            try {
+              const err = JSON.parse(data.slice(15));
+              console.warn("[BILLING]", err.message || "Unknown billing error");
+              setMessages(prev => {
+                const c = [...prev];
+                c.push({ role: "assistant", isError: true, content: `⚠️ Billing Warning: ${err.message || "Gagal mendebit saldo"}` });
+                return c;
+              });
+            } catch { /* skip malformed */ }
+            continue;
+          }
           try {
             const parsed = JSON.parse(data);
             const delta = parsed.choices?.[0]?.delta?.content || "";
@@ -258,7 +270,7 @@ export default function PlaygroundTab({ session, onUpdateSession, onAddUsageLog,
         modelName: model,
         promptTokens: inputTokens,
         completionTokens: outputTokens,
-        costDeducted: model.endsWith(":free") ? 0 : Math.ceil((inputTokens + outputTokens) * 0.001 * 16000),
+        costDeducted: Math.ceil((inputTokens + outputTokens) * 0.001 * 16000),
         latencyMs,
         status: "Success"
       });
@@ -432,7 +444,7 @@ export default function PlaygroundTab({ session, onUpdateSession, onAddUsageLog,
           </div>
           <div className="flex items-center gap-1.5 text-cyan-400 font-bold shrink-0">
             <Coins className="w-3.5 h-3.5" />
-            <span>Saldo: {session.balance.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 })}</span>
+            <span>Saldo: {session.balance.toLocaleString("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
         </div>
 
