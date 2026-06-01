@@ -44,6 +44,7 @@ export default function BillingTab({ session, transactions, onTopUp }: BillingTa
     } else {
       // Simulate VA success immediately
       onTopUp(finalAmount, "Virtual Account");
+      alert(`Top Up Sukses! Dana senilai Rp ${finalAmount.toLocaleString("id-ID")} didepositkan ke saldo Anda.`);
     }
   };
 

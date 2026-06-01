@@ -261,44 +261,32 @@ export default function App() {
     // nominal slider ke USD conversion simulator rate
     const usdAmount = amount / 16000;
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/dashboard/topup`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${supabaseToken}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ amount: usdAmount })
+    const res = await fetch(`${API_BASE_URL}/dashboard/topup`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${supabaseToken}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ amount: usdAmount })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      setSession({
+        ...session,
+        balance: parseFloat(data.balance) * 16000
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        setSession({
-          ...session,
-          balance: parseFloat(data.balance) * 16000
-        });
-
-        // Register transaction locally to reflect instant update
-        const newTr: Transaction = {
-          id: `TR-${Date.now().toString(36).toUpperCase()}`,
-          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-          description: `Top Up via ${method}`,
-          amount: amount,
-          status: "Success",
-          method: method
-        };
-        setTransactions(prev => [newTr, ...prev]);
-        alert(`Top Up Sukses! Dana senilai Rp ${amount.toLocaleString("id-ID")} berhasil didepositkan.`);
-      } else {
-        let errMsg = "Terjadi kesalahan saat memproses top-up.";
-        try {
-          const errData = await res.json();
-          errMsg = errData.message || (typeof errData.detail === 'object' ? errData.detail.message : errData.detail) || errMsg;
-        } catch {}
-        alert(`Gagal Melakukan Top Up: ${errMsg}`);
-      }
-    } catch (e: any) {
-      alert(`Gagal menghubungi server backend: ${e.message}`);
+      // Register transaction locally to reflect instant update
+      const newTr: Transaction = {
+        id: `TR-${Date.now().toString(36).toUpperCase()}`,
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        description: `Top Up via ${method}`,
+        amount: amount,
+        status: "Success",
+        method: method
+      };
+      setTransactions(prev => [newTr, ...prev]);
     }
   };
 
