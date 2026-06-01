@@ -116,7 +116,7 @@ export default function LandingPage({ onLogin }: LandingPageProps) {
               <Terminal className="w-5 h-5 font-bold" />
             </div>
             <span className="font-sans text-xl font-extrabold text-[#06b6d4] tracking-tight flex items-center gap-1.5">
-              Gate<span className="text-[#22d3ee]">LLM</span>
+              Kedai<span className="text-[#22d3ee]">AI</span>
               <span className="text-[9px] bg-[#06b6d4]/10 font-bold px-1.5 py-0.5 rounded text-[#06b6d4] border border-[#06b6d4]/20">SaaS Gateway</span>
             </span>
           </div>
