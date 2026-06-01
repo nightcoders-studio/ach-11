@@ -19,6 +19,7 @@ interface PlaygroundTabProps {
   session: UserSession;
   onUpdateSession: (newSession: UserSession) => void;
   onAddUsageLog: (log: UsageLog) => void;
+  onRefreshBalance: () => Promise<void>;
 }
 
 interface Message {
@@ -49,13 +50,11 @@ const AVAILABLE_MODELS = [
     { id: "openai/gpt-3.5-turbo", label: "GPT-3.5 Turbo" },
     { id: "openai/gpt-4o-mini", label: "GPT-4o Mini" },
     { id: "anthropic/claude-3-haiku", label: "Claude 3 Haiku" },
-  ]},
-  { group: "LM Studio (Pengujian Lokal)", models: [
-    { id: "lmstudio/liquid/lfm2.5-1.2b", label: "Liquid LFM 2.5 1.2B (Local)" },
+    { id: "lmstudio/liquid/lfm2.5-1.2b", label: "Liquid LFM 2.5 1.2B (LM Studio)" },
   ]},
 ];
 
-export default function PlaygroundTab({ session, onUpdateSession, onAddUsageLog }: PlaygroundTabProps) {
+export default function PlaygroundTab({ session, onUpdateSession, onAddUsageLog, onRefreshBalance }: PlaygroundTabProps) {
   const [model, setModel] = useState<string>("lmstudio/liquid/lfm2.5-1.2b");
   const [systemPrompt, setSystemPrompt] = useState("Anda adalah asisten AI teknis. Jawab dengan ringkas dalam bahasa Indonesia.");
   const [temperature, setTemperature] = useState(0.7);
@@ -277,6 +276,12 @@ export default function PlaygroundTab({ session, onUpdateSession, onAddUsageLog 
       });
     } finally {
       setIsStreaming(false);
+      // Polling saldo terbaru dari database setelah setiap request selesai
+      try {
+        await onRefreshBalance();
+      } catch (e) {
+        console.warn("Gagal refresh saldo:", e);
+      }
     }
   };
 

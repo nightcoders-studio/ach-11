@@ -45,6 +45,8 @@ export default function DashboardTab({ session, usageLogs, onNavigate }: Dashboa
       return { input: 0.005 * multiplier, output: 0.015 * multiplier };
     } else if (name.includes("claude-3-5-sonnet")) { // older mock
       return { input: 0.003 * multiplier, output: 0.009 * multiplier };
+    } else if (name.includes("lfm2.5") || name.includes("lmstudio")) {
+      return { input: 0.000150 * multiplier, output: 0.000600 * multiplier };
     } else {
       // default fallback
       return { input: 0.0001 * multiplier, output: 0.0003 * multiplier };

@@ -24,7 +24,8 @@ INSERT INTO public.model_pricing (model_id, display_name, provider, input_price_
   ('openrouter/cognitivecomputations/dolphin-mistral-24b-venice-edition:free', 'Dolphin Mistral 24B Venice Edition (Free)', 'openrouter', 0.000000, 0.000000, 32768),
   ('openrouter/meta-llama/llama-3.3-70b-instruct:free', 'Meta Llama 3.3 70B Instruct (Free)', 'openrouter', 0.000000, 0.000000, 131072),
   ('openrouter/meta-llama/llama-3.2-3b-instruct:free', 'Meta Llama 3.2 3B Instruct (Free)', 'openrouter', 0.000000, 0.000000, 131072),
-  ('openrouter/nousresearch/hermes-3-llama-3.1-405b:free', 'Hermes 3 Llama 3.1 405B (Free)', 'openrouter', 0.000000, 0.000000, 131072)
+  ('openrouter/nousresearch/hermes-3-llama-3.1-405b:free', 'Hermes 3 Llama 3.1 405B (Free)', 'openrouter', 0.000000, 0.000000, 131072),
+  ('lmstudio/liquid/lfm2.5-1.2b', 'Liquid LFM 2.5 1.2B (LM Studio)', 'lmstudio', 0.000150, 0.000600, 32768)
 ON CONFLICT (model_id) DO UPDATE SET
   display_name = EXCLUDED.display_name,
   provider = EXCLUDED.provider,

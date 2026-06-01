@@ -69,7 +69,7 @@ export default function App() {
 
   const fetchWalletData = async (userId: string, email: string) => {
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("wallets")
         .select("balance")
         .eq("user_id", userId)
@@ -95,6 +95,26 @@ export default function App() {
       }
     } catch (e) {
       console.error("Gagal mengambil data wallet:", e);
+    }
+  };
+
+  // Refresh saldo dari database — dipanggil setelah penggunaan API Playground
+  const refreshWalletBalance = async () => {
+    try {
+      const { data: { session: sbSession } } = await supabase.auth.getSession();
+      if (!sbSession?.user) return;
+      const { data } = await supabase
+        .from("wallets")
+        .select("balance")
+        .eq("user_id", sbSession.user.id)
+        .single();
+      if (data) {
+        const newBalanceIDR = parseFloat(data.balance) * 16000;
+        console.log(`[WALLET REFRESH] Saldo terbaru dari DB: Rp ${newBalanceIDR.toLocaleString()}`);
+        setSession(prev => prev ? { ...prev, balance: newBalanceIDR } : null);
+      }
+    } catch (e) {
+      console.warn("refreshWalletBalance gagal:", e);
     }
   };
 
@@ -342,8 +362,11 @@ export default function App() {
   };
 
   const handleAddUsageLog = (log: UsageLog) => {
-    if (supabaseToken) return; // let realtime channel handle database updates
-    setUsageLogs(prev => [log, ...prev]);
+    // Always update local UI immediately — realtime channel will de-duplicate
+    setUsageLogs(prev => {
+      if (prev.some(l => l.id === log.id)) return prev;
+      return [log, ...prev];
+    });
   };
 
   // Switch rendered child Tab Panel
@@ -372,7 +395,8 @@ export default function App() {
           <PlaygroundTab 
             session={session} 
             onUpdateSession={setSession} 
-            onAddUsageLog={handleAddUsageLog} 
+            onAddUsageLog={handleAddUsageLog}
+            onRefreshBalance={refreshWalletBalance}
           />
         );
       case "billing":
