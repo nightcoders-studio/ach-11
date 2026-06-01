@@ -184,7 +184,7 @@ export default function BillingTab({ session, transactions, onTopUp }: BillingTa
             <div className="p-4 bg-slate-900 rounded-lg border border-slate-800 flex items-center justify-between">
               <div>
                 <span className="text-[10px] uppercase font-mono text-slate-400 block">Sisa Saldo Anda:</span>
-                <span className="text-xl font-bold font-mono text-white">Rp {session.balance.toLocaleString("id-ID")}</span>
+                 <span className="text-xl font-bold font-mono text-white">Rp {session.balance.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
               <Wallet className="w-8 h-8 text-cyan-400 shrink-0 opacity-80" />
             </div>

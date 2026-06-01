@@ -389,7 +389,7 @@ export default function App() {
               <div className="flex items-center gap-2">
                 <Wallet className="w-4 h-4 text-cyan-500 shrink-0" />
                 <span className="text-sm font-mono font-bold text-white leading-none">
-                  Rp {session.balance.toLocaleString("id-ID")}
+                  Rp {session.balance.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>
               
@@ -512,7 +512,7 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-3 text-xs font-mono text-slate-400">
-            <span>Saldo: {session.balance.toLocaleString("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 })}</span>
+            <span>Saldo: {session.balance.toLocaleString("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             <button 
               onClick={handleLogout}
               className="p-1 hover:text-white transition"

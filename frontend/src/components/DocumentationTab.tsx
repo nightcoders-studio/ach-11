@@ -44,6 +44,7 @@ interface HealthState {
 }
 
 export default function DocumentationTab() {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
   const [activeTab, setActiveTab] = useState<"quickstart" | "endpoints" | "errors">("quickstart");
   const [selectedEndpoint, setSelectedEndpoint] = useState<string>("chat");
   const [selectedLanguage, setSelectedLanguage] = useState<"curl" | "javascript" | "python" | "python-sdk">("curl");
@@ -249,7 +250,7 @@ export default function DocumentationTab() {
 
   // Multiple Language Code Snippets
   const codeSnippets = {
-    curl: `curl https://api.gatellm.id/v1/chat/completions \\
+    curl: `curl ${API_BASE_URL}/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer YOUR_GLM_API_KEY" \\
   -d '{
@@ -261,7 +262,7 @@ export default function DocumentationTab() {
   }'`,
     javascript: `// Menggunakan Fetch API di Node.js (v18+) atau Browser
 const queryGateLLM = async () => {
-  const response = await fetch("https://api.gatellm.id/v1/chat/completions", {
+  const response = await fetch("${API_BASE_URL}/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -285,7 +286,7 @@ queryGateLLM();`,
     python: `# Menggunakan library requests standard
 import requests
 
-url = "https://api.gatellm.id/v1/chat/completions"
+url = "${API_BASE_URL}/v1/chat/completions"
 headers = {
     "Content-Type": "application/json",
     "Authorization": "Bearer YOUR_GLM_API_KEY"
@@ -309,7 +310,7 @@ print(f"Cost Deducted: {result['cost_idr']} IDR")`,
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://api.gatellm.id/v1",
+    base_url="${API_BASE_URL}/v1",
     api_key="YOUR_GLM_API_KEY" # Masukkan API Key GateLLM Anda
 )
 
@@ -661,7 +662,7 @@ print(response.choices[0].message.content)`
               <div className="space-y-4 text-xs font-sans text-slate-300 leading-relaxed">
                 <div>
                   <h4 className="font-mono text-[11px] font-bold text-slate-400 block uppercase">Base URL API</h4>
-                  <code className="text-cyan-400 font-mono text-[11px] block mt-1 bg-slate-900 p-2 rounded border border-slate-900 shadow-inner select-all break-all">https://api.gatellm.id/v1</code>
+                  <code className="text-cyan-400 font-mono text-[11px] block mt-1 bg-slate-900 p-2 rounded border border-slate-900 shadow-inner select-all break-all">{`${API_BASE_URL}/v1`}</code>
                 </div>
 
                 <div>
