@@ -449,10 +449,12 @@ export default function App() {
             <div className="bg-[#0b0f19] border border-slate-900 rounded-xl p-3.5 space-y-2 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-transparent pointer-events-none"></div>
               <span className="text-[10px] uppercase font-mono text-slate-500 block font-bold">PREPAID CREDIT:</span>
-              <div className="flex items-center gap-2">
-                <Wallet className="w-4 h-4 text-cyan-500 shrink-0" />
-                <span className="text-sm font-mono font-bold text-white leading-none">
+              <div className="flex flex-col gap-1">
+                <span className="text-sm font-bold font-mono text-cyan-300">
                   Rp {session.balance.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+                <span className="text-[9px] font-mono text-slate-500 block">
+                  ≈ ${(session.balance / 16000).toFixed(4)} USD
                 </span>
               </div>
               

@@ -6,21 +6,25 @@ import logging
 
 logger = logging.getLogger("gatellm")
 
-# Cache in-memory model pricing untuk optimasi performa
-_pricing_cache = {}
+# Cache in-memory model pricing dengan TTL 60 detik
+import time
+_pricing_cache: dict = {}
+_pricing_cache_time: dict = {}
+PRICING_CACHE_TTL = 60  # detik
 
 # Default minimum pricing untuk semua model (agar semua bersifat paid)
-DEFAULT_MIN_INPUT_PRICE = 0.000150   # $0.000150 per 1k tokens
-DEFAULT_MIN_OUTPUT_PRICE = 0.000600  # $0.000600 per 1k tokens
+DEFAULT_MIN_INPUT_PRICE = 0.001000   # $0.001 per 1k tokens
+DEFAULT_MIN_OUTPUT_PRICE = 0.002000  # $0.002 per 1k tokens
 DEFAULT_MARKUP_RATE = 1.20
 
 
 async def get_model_pricing(model_id: str) -> dict:
     """
     Mengambil skema pricing per model dari database.
-    Jika model tidak ditemukan atau memiliki harga nol, gunakan default minimum paid pricing.
+    Cache selama 60 detik, lalu refresh dari DB.
     """
-    if model_id in _pricing_cache:
+    now = time.time()
+    if model_id in _pricing_cache and (now - _pricing_cache_time.get(model_id, 0)) < PRICING_CACHE_TTL:
         return _pricing_cache[model_id]
 
     pricing_dict = None
@@ -66,6 +70,7 @@ async def get_model_pricing(model_id: str) -> dict:
     )
 
     _pricing_cache[model_id] = pricing_dict
+    _pricing_cache_time[model_id] = now
     return pricing_dict
 
 
