@@ -16,7 +16,7 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s %(name)s %(message)s',
     level=logging.INFO
 )
-logger = logging.getLogger("gatellm")
+logger = logging.getLogger("kedai_ai")
 
 # 2. Setup Sentry
 if settings.sentry_dsn:
@@ -31,7 +31,7 @@ limiter = Limiter(key_func=get_remote_address)
 
 # 4. Inisialisasi FastAPI
 app = FastAPI(
-    title="GateLLM API Gateway",
+    title="KedaiAI API Gateway",
     description="Satu API Key untuk akses semua model AI ternama berbasis prabayar (prepaid).",
     version="1.0.0"
 )
@@ -88,9 +88,9 @@ app.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
 @app.get("/")
 async def index():
     return {
-        "app": "GateLLM API Gateway",
+        "app": "KedaiAI API Gateway",
         "status": "online",
         "docs": "/docs"
     }
 
-logger.info("GateLLM backend successfully initialized")
+logger.info("KedaiAI backend successfully initialized")

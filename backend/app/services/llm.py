@@ -4,7 +4,7 @@ from app.config import settings
 from fastapi import HTTPException
 import logging
 
-logger = logging.getLogger("gatellm")
+logger = logging.getLogger("kedai_ai")
 
 # Set up API keys untuk LiteLLM
 litellm.google_api_key = settings.google_api_key
@@ -19,7 +19,7 @@ litellm.telemetry = False
 
 def get_mapped_model_string(model_id: str) -> str:
     """
-    Memetakan model standar GateLLM ke format upstream provider milik LiteLLM/OpenRouter.
+    Memetakan model standar KedaiAI ke format upstream provider milik LiteLLM/OpenRouter.
     """
     if model_id.startswith("lmstudio/"):
         return f"openai/{model_id.replace('lmstudio/', '')}"

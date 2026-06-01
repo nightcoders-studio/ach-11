@@ -103,10 +103,10 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`GateLLM custom server is running cleanly on host 0.0.0.0 port ${PORT}`);
+    console.log(`KedaiAI custom server is running cleanly on host 0.0.0.0 port ${PORT}`);
   });
 }
 
 startServer().catch((err) => {
-  console.error("Failed to boot up GateLLM server:", err);
+  console.error("Failed to boot up KedaiAI server:", err);
 });

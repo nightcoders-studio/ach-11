@@ -1,5 +1,5 @@
 -- =============================================================================
--- GateLLM Full Database Setup Script
+-- KedaiAI Full Database Setup Script
 -- Jalankan ini sekali di Supabase SQL Editor
 -- Aman dijalankan berulang kali (IF NOT EXISTS + ON CONFLICT)
 -- =============================================================================
@@ -286,4 +286,4 @@ ON CONFLICT (user_id) DO UPDATE SET
   balance = GREATEST(public.wallets.balance, 6.250000);
 
 -- ── DONE ───────────────────────────────────────────────────────────────────
-SELECT 'GateLLM Database Setup Complete!' AS status;
+SELECT 'KedaiAI Database Setup Complete!' AS status;

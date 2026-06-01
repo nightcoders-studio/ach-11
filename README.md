@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ GateLLM
+# ⚡ KedaiAI
 
 **Satu API Key. Semua Model AI Terkemuka. Berbasis Prabayar.**
 
@@ -14,9 +14,9 @@
 
 ---
 
-## 🚀 Tentang GateLLM
+## 🚀 Tentang KedaiAI
 
-**GateLLM** adalah **API Gateway** terpadu yang menyederhanakan akses ke berbagai model AI terkemuka melalui **satu API Key** dengan sistem **saldo prabayar (prepaid)**. Dibangun untuk developer yang ingin fleksibilitas memilih model AI terbaik tanpa harus mengelola banyak akun dan API key terpisah.
+**KedaiAI** adalah **API Gateway** terpadu yang menyederhanakan akses ke berbagai model AI terkemuka melalui **satu API Key** dengan sistem **saldo prabayar (prepaid)**. Dibangun untuk developer yang ingin fleksibilitas memilih model AI terbaik tanpa harus mengelola banyak akun dan API key terpisah.
 
 ### ✨ Fitur Utama
 
@@ -40,7 +40,7 @@ Client App / Developer
         │  Authorization: Bearer glm_xxxxxxxx
         ▼
 ┌──────────────────────────────────────────┐
-│            GateLLM API Gateway           │
+│            KedaiAI API Gateway           │
 │              (FastAPI + Uvicorn)         │
 │                                          │
 │  ┌──────────┐   ┌────────────────────┐  │
@@ -331,10 +331,10 @@ Test yang tersedia:
 cd backend
 
 # Build image
-docker build -t gatellm-backend .
+docker build -t kedai_ai-backend .
 
 # Run container
-docker run -p 8000:8000 --env-file .env gatellm-backend
+docker run -p 8000:8000 --env-file .env kedai_ai-backend
 ```
 
 ---
@@ -396,5 +396,5 @@ MIT License — bebas digunakan dan dimodifikasi.
 ---
 
 <div align="center">
-  <strong>GateLLM</strong> — Dibangun dengan ❤️ oleh NightCoders Studio
+  <strong>KedaiAI</strong> — Dibangun dengan ❤️ oleh NightCoders Studio
 </div>

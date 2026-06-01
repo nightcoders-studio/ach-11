@@ -1,5 +1,5 @@
 -- =============================================================================
--- GateLLM Schema Fix & Postgrest Sync Script
+-- KedaiAI Schema Fix & Postgrest Sync Script
 -- Jalankan ini di Supabase Dashboard > SQL Editor untuk memperbaiki kolom yang hilang.
 -- =============================================================================
 
@@ -103,4 +103,4 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- 4. Reload Postgrest schema cache secara paksa
 NOTIFY pgrst, 'reload schema';
 
-SELECT 'GateLLM Schema fixed and Postgrest reloaded successfully!' AS status;
+SELECT 'KedaiAI Schema fixed and Postgrest reloaded successfully!' AS status;

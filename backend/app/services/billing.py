@@ -4,7 +4,7 @@ from app.config import settings
 from fastapi import HTTPException
 import logging
 
-logger = logging.getLogger("gatellm")
+logger = logging.getLogger("kedai_ai")
 
 # Cache in-memory model pricing dengan TTL 60 detik
 import time

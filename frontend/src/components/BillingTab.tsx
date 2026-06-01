@@ -208,7 +208,7 @@ export default function BillingTab({ session, transactions, onTopUp }: BillingTa
           <div className="p-4.5 bg-cyan-950/20 border border-cyan-500/20 rounded-xl flex gap-3 text-xs text-cyan-300">
             <AlertCircle className="w-5 h-5 text-cyan-400 shrink-0" />
             <p className="leading-relaxed text-slate-400">
-              Saldo GateLLM tidak hangus atau kadaluarsa. Dana deposit dapat selalu digunakan kapan saja sepanjang akun developer Anda aktif di GateLLM.
+              Saldo KedaiAI tidak hangus atau kadaluarsa. Dana deposit dapat selalu digunakan kapan saja sepanjang akun developer Anda aktif di KedaiAI.
             </p>
           </div>
         </div>
@@ -266,7 +266,7 @@ export default function BillingTab({ session, transactions, onTopUp }: BillingTa
         <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="w-full max-w-sm bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl animate-scale-up text-center p-6 space-y-5">
             <div>
-              <span className="text-[10px] uppercase font-mono tracking-widest text-cyan-400 px-2 rounded bg-cyan-950/40 border border-cyan-500/20 inline-block mb-1">GateLLM QRIS Merchant</span>
+              <span className="text-[10px] uppercase font-mono tracking-widest text-cyan-400 px-2 rounded bg-cyan-950/40 border border-cyan-500/20 inline-block mb-1">KedaiAI QRIS Merchant</span>
               <h3 className="text-base font-bold font-mono text-white">Metode QRIS Prabayar</h3>
               <p className="text-slate-400 text-xs mt-1">Scan kode QR di bawah ini menggunakan aplikasi OVO / GoPay / ShopeePay / Mobile Banking Anda.</p>
             </div>

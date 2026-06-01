@@ -145,10 +145,10 @@ export default function DocumentationTab() {
       id: "chat",
       method: "POST",
       path: "/v1/chat/completions",
-      description: "Endpoint utama untuk berinteraksi dengan AI Router GateLLM. Permintaan otomatis di-routing ke provider terbaik (Gemini, OpenAI, Claude) berdasarkan bobot performa, latensi aktual, atau penentuan model spesifik Anda.",
+      description: "Endpoint utama untuk berinteraksi dengan AI Router KedaiAI. Permintaan otomatis di-routing ke provider terbaik (Gemini, OpenAI, Claude) berdasarkan bobot performa, latensi aktual, atau penentuan model spesifik Anda.",
       headers: [
         { key: "Content-Type", value: "application/json", desc: "Tipe media konten request" },
-        { key: "Authorization", value: "Bearer GLM_PROD_...", desc: "GateLLM API Key dari tab API Credentials" }
+        { key: "Authorization", value: "Bearer GLM_PROD_...", desc: "KedaiAI API Key dari tab API Credentials" }
       ],
       requestBody: `{
   "model": "gemini-3.5-flash", 
@@ -193,9 +193,9 @@ export default function DocumentationTab() {
       id: "models",
       method: "GET",
       path: "/v1/models",
-      description: "Mengembalikan daftar semua model AI (endpoints) yang terdaftar dan aktif di bawah proxy routing GateLLM beserta detail tarif biaya per 1,000 token.",
+      description: "Mengembalikan daftar semua model AI (endpoints) yang terdaftar dan aktif di bawah proxy routing KedaiAI beserta detail tarif biaya per 1,000 token.",
       headers: [
-        { key: "Authorization", value: "Bearer GLM_PROD_...", desc: "GateLLM API Key" }
+        { key: "Authorization", value: "Bearer GLM_PROD_...", desc: "KedaiAI API Key" }
       ],
       responseBody: `{
   "object": "list",
@@ -236,7 +236,7 @@ export default function DocumentationTab() {
       path: "/v1/balance",
       description: "Memeriksa sisa saldo (prepaid credit) yang saat ini diasosiasikan dengan API Key Anda yang sedang aktif secara real-time.",
       headers: [
-        { key: "Authorization", value: "Bearer GLM_PROD_...", desc: "GateLLM API Key" }
+        { key: "Authorization", value: "Bearer GLM_PROD_...", desc: "KedaiAI API Key" }
       ],
       responseBody: `{
   "object": "wallet.balance",
@@ -256,12 +256,12 @@ export default function DocumentationTab() {
   -d '{
     "model": "gemini-3.5-flash",
     "messages": [
-      {"role": "user", "content": "Halo GateLLM, perkenalkan dirimu!"}
+      {"role": "user", "content": "Halo KedaiAI, perkenalkan dirimu!"}
     ],
     "temperature": 0.7
   }'`,
     javascript: `// Menggunakan Fetch API di Node.js (v18+) atau Browser
-const queryGateLLM = async () => {
+const queryKedaiAI = async () => {
   const response = await fetch("${API_BASE_URL}/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -282,7 +282,7 @@ const queryGateLLM = async () => {
   console.log("Biaya Terpotong:", data.cost_idr, "IDR");
 };
 
-queryGateLLM();`,
+queryKedaiAI();`,
     python: `# Menggunakan library requests standard
 import requests
 
@@ -311,7 +311,7 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url="${API_BASE_URL}/v1",
-    api_key="YOUR_GLM_API_KEY" # Masukkan API Key GateLLM Anda
+    api_key="YOUR_GLM_API_KEY" # Masukkan API Key KedaiAI Anda
 )
 
 response = client.chat.completions.create(
@@ -336,7 +336,7 @@ print(response.choices[0].message.content)`
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight font-mono">Dokumentasi API Pengembang</h1>
-          <p className="text-slate-400 text-sm">Pelajari cara mengintegrasikan router GateLLM terpadu langsung ke platform atau aplikasi backend produksi Anda.</p>
+          <p className="text-slate-400 text-sm">Pelajari cara mengintegrasikan router KedaiAI terpadu langsung ke platform atau aplikasi backend produksi Anda.</p>
         </div>
       </div>
 
@@ -582,10 +582,10 @@ print(response.choices[0].message.content)`
             <div className="glass-panel p-6 rounded-xl space-y-4">
               <h3 className="text-sm font-bold font-mono text-white flex items-center gap-2 uppercase tracking-wider">
                 <Terminal className="w-4 h-4 text-cyan-400 shrink-0" />
-                Mengapa GateLLM?
+                Mengapa KedaiAI?
               </h3>
               <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
-                GateLLM menyediakan **API gateway tunggal** yang memungkikan pengembang memanggil LLM tercanggih di industri tanpa mendaftar di masing-masing platform. Anda hanya perlu mendepositkan saldo (prepaid Rupiah), membuat API Key, lalu panggil router kami.
+                KedaiAI menyediakan **API gateway tunggal** yang memungkikan pengembang memanggil LLM tercanggih di industri tanpa mendaftar di masing-masing platform. Anda hanya perlu mendepositkan saldo (prepaid Rupiah), membuat API Key, lalu panggil router kami.
               </p>
 
               {/* 3 Step Tutorial Grid Cards */}
@@ -673,7 +673,7 @@ print(response.choices[0].message.content)`
 
                 <div className="p-3 bg-cyan-950/20 border border-cyan-500/10 rounded-lg flex gap-2">
                   <Info className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                  <p className="text-[11px] text-slate-400">Gunakan API Key yang digenerate di GateLLM Console. Jangan pernah membeberkan token ini pada frontend client publik browser.</p>
+                  <p className="text-[11px] text-slate-400">Gunakan API Key yang digenerate di KedaiAI Console. Jangan pernah membeberkan token ini pada frontend client publik browser.</p>
                 </div>
               </div>
             </div>
@@ -870,7 +870,7 @@ print(response.choices[0].message.content)`
                   <td className="p-4 px-5 text-red-500 font-bold align-top">502 Bad Gateway</td>
                   <td className="p-4 px-5 text-white font-medium align-top break-words">Router Connection Error</td>
                   <td className="p-4 px-5 text-slate-400 leading-relaxed align-top break-words">Provider upstream asli (seperti OpenAI atau Anthropic) sedang mengalami kendala teknis atau timeout internal.</td>
-                  <td className="p-4 px-5 text-slate-200 align-top break-words leading-relaxed font-sans">Atur alternatif endpoint lain di GateLLM router (misalnya beralih instan ke Google Gemini series).</td>
+                  <td className="p-4 px-5 text-slate-200 align-top break-words leading-relaxed font-sans">Atur alternatif endpoint lain di KedaiAI router (misalnya beralih instan ke Google Gemini series).</td>
                 </tr>
               </tbody>
             </table>

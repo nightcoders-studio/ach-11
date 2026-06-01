@@ -61,7 +61,7 @@ export default function PlaygroundTab({ session, onUpdateSession, onAddUsageLog,
   const [maxTokens] = useState(2048);
 
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "Halo! Saya adalah API Proxy Playground GateLLM. Di sini Anda bisa menguji fungsionalitas LLM Router kami secara langsung menggunakan API Key GateLLM Anda!" }
+    { role: "assistant", content: "Halo! Saya adalah API Proxy Playground KedaiAI. Di sini Anda bisa menguji fungsionalitas LLM Router kami secara langsung menggunakan API Key KedaiAI Anda!" }
   ]);
   const [inputVal, setInputVal] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
@@ -153,7 +153,7 @@ export default function PlaygroundTab({ session, onUpdateSession, onAddUsageLog,
       fetchActiveApiKey();
     } else if (trimmed.length > 0) {
       setActiveApiKey(null);
-      setKeyError("⚠️ Format Kunci salah: API Key GateLLM yang valid harus diawali dengan 'glm_'");
+      setKeyError("⚠️ Format Kunci salah: API Key KedaiAI yang valid harus diawali dengan 'glm_'");
     }
   };
 
@@ -166,7 +166,7 @@ export default function PlaygroundTab({ session, onUpdateSession, onAddUsageLog,
       setMessages(prev => [...prev, {
         role: "assistant",
         isError: true,
-        content: `❌ Backend GateLLM tidak dapat dijangkau di ${API_BASE_URL}.\n\nJalankan backend:\n  cd backend\n  venv\\Scripts\\activate\n  uvicorn app.main:app --reload --port 8000`
+        content: `❌ Backend KedaiAI tidak dapat dijangkau di ${API_BASE_URL}.\n\nJalankan backend:\n  cd backend\n  venv\\Scripts\\activate\n  uvicorn app.main:app --reload --port 8000`
       }]);
       return;
     }

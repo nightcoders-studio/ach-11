@@ -12,7 +12,7 @@ import json
 import asyncio
 import logging
 
-logger = logging.getLogger("gatellm")
+logger = logging.getLogger("kedai_ai")
 router = APIRouter()
 
 @router.post("/v1/chat/completions")
@@ -131,7 +131,7 @@ async def chat_completions(
             "Cache-Control": "no-cache",
             "X-Accel-Buffering": "no",
             "Connection": "keep-alive",
-            "X-GateLLM-Request-ID": request_id
+            "X-KedaiAI-Request-ID": request_id
         }
     )
 

@@ -1,5 +1,5 @@
 -- supabase/migrations/004_enable_realtime.sql
--- Enable Supabase Realtime for GateLLM tables
+-- Enable Supabase Realtime for KedaiAI tables
 
 -- Create publication if it doesn't exist
 DO $$

@@ -6,7 +6,7 @@ from app.database import supabase
 
 def generate_api_key() -> tuple[str, str, str]:
     """
-    Menghasilkan API Key GateLLM secara acak.
+    Menghasilkan API Key KedaiAI secara acak.
     Returns:
         tuple[str, str, str]: (raw_key, hashed_key, key_prefix)
     """

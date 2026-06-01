@@ -6,7 +6,7 @@ from app.database import supabase
 from datetime import datetime
 import logging
 
-logger = logging.getLogger("gatellm")
+logger = logging.getLogger("kedai_ai")
 router = APIRouter()
 
 @router.post("/api-keys", response_model=ApiKeyCreateResponse)

@@ -1,4 +1,4 @@
-# Frontend-Backend Integration Plan — GateLLM
+# Frontend-Backend Integration Plan — KedaiAI
 > Target: **Menghubungkan Mock Frontend React (Vite) ke API Real FastAPI (Python)**  
 > Berdasarkan: [backend_plan.md](./backend_plan.md) & [backend_task.md](./backend_task.md)  
 > Terakhir Diperbarui: Juni 2026
@@ -141,7 +141,7 @@ Mengintegrasikan text completion stream langsung ke **FastAPI Gateway Endpoint**
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${userApiKey}` // Menggunakan Kunci API GateLLM glm_
+      "Authorization": `Bearer ${userApiKey}` // Menggunakan Kunci API KedaiAI glm_
     },
     body: JSON.stringify({
       model: model, // openrouter/google/gemini-2.0-flash-lite-preview-02-05:free dll

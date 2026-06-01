@@ -112,7 +112,7 @@ export default function UsageTab({ usageLogs }: UsageTabProps) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `GateLLM_Usage_Report_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `KedaiAI_Usage_Report_${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -148,7 +148,7 @@ export default function UsageTab({ usageLogs }: UsageTabProps) {
           </div>
           <div>
             <span className="font-mono font-bold text-xs text-white block">Sistem Penagihan Sesuai 1 Token / Rp (Sangat Adil)</span>
-            <span className="text-[11px] text-slate-400">Penggunaan router GateLLM dihitung murni serealistis tarif presisi token per token. Bebas dari biaya penalti minimum Rp 4 per API call.</span>
+            <span className="text-[11px] text-slate-400">Penggunaan router KedaiAI dihitung murni serealistis tarif presisi token per token. Bebas dari biaya penalti minimum Rp 4 per API call.</span>
           </div>
         </div>
         <div className="px-3 py-1.5 bg-cyan-950/60 rounded text-[10px] font-mono font-bold text-cyan-400 self-start sm:self-auto border border-cyan-500/10 flex items-center gap-1.5">

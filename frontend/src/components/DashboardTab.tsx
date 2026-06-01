@@ -463,7 +463,7 @@ export default function DashboardTab({ session, usageLogs, onNavigate }: Dashboa
 
             <div className="pt-4 border-t border-slate-900 text-xs text-slate-500 space-y-2">
               <span className="font-bold text-slate-400 block font-mono">Dukungan API Gateway:</span>
-              <p className="leading-relaxed">Jika menemui kendala dalam pengujian API key pada framework, silakan hubungi Customer Success di channel Discord GateLLM.</p>
+              <p className="leading-relaxed">Jika menemui kendala dalam pengujian API key pada framework, silakan hubungi Customer Success di channel Discord KedaiAI.</p>
             </div>
           </div>
         </div>

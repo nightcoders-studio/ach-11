@@ -1,5 +1,5 @@
 {
-  "name": "GateLLM",
+  "name": "KedaiAI",
   "description": "AI API Gateway SaaS for Indonesian Developers. Connect to Gemini, GPT, and Claude via a single API key with Rupiah pre-paid billing.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

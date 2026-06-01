@@ -1,4 +1,4 @@
-# Frontend Integration Task Tracker — GateLLM
+# Frontend Integration Task Tracker — KedaiAI
 > Referensi: [frontend_integration_plan.md](./frontend_integration_plan.md) | [backend_plan.md](./backend_plan.md)  
 > Update status: `[ ]` belum → `[/]` sedang dikerjakan → `[x]` selesai
 
@@ -65,7 +65,7 @@
 
 ## 🧪 Fase 5 — Playground Real SSE Streaming
 
-> **Tujuan:** Menghubungkan Playground chat dengan API Gateway streaming FastAPI menggunakan API Key GateLLM.
+> **Tujuan:** Menghubungkan Playground chat dengan API Gateway streaming FastAPI menggunakan API Key KedaiAI.
 
 - [x] Modifikasi `PlaygroundTab.tsx`:
   - Ambil salah satu API Key aktif milik user dari state untuk digunakan sebagai authorization header (`Bearer glm_xxx`).

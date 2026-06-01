@@ -1,4 +1,4 @@
--- GateLLM: Patch wallets table — tambahkan kolom yang masih kurang
+-- KedaiAI: Patch wallets table — tambahkan kolom yang masih kurang
 -- Jalankan di Supabase SQL Editor
 
 ALTER TABLE public.wallets ADD COLUMN IF NOT EXISTS currency VARCHAR(3) DEFAULT 'USD' NOT NULL;

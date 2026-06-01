@@ -90,7 +90,7 @@ export default function ApiKeysTab({ apiKeys, onCreateKey, onRevokeKey }: ApiKey
         <div className="space-y-1">
           <span className="font-bold font-mono">Keamanan Credential Tingkat Tinggi (CRITICAL WARNING)</span>
           <p className="leading-relaxed text-slate-400">
-            Kunci API GateLLM memberikan akses tak bebas hambatan ke saldo wallet Anda. Jangan pernah menyimpan API metrics di kode frontend browser klien. 
+            Kunci API KedaiAI memberikan akses tak bebas hambatan ke saldo wallet Anda. Jangan pernah menyimpan API metrics di kode frontend browser klien. 
             Direkomendasikan melakukan parsing value API keys di server-side backend wrapper (Express, NextJS API route, Django, dll).
           </p>
         </div>
@@ -180,10 +180,10 @@ export default function ApiKeysTab({ apiKeys, onCreateKey, onRevokeKey }: ApiKey
           <Info className="w-5 h-5" />
         </div>
         <div className="space-y-1.5 text-xs text-slate-400 leading-relaxed">
-          <span className="font-bold text-white font-mono block">Cara Autentikasi Menggunakan Library API GateLLM</span>
+          <span className="font-bold text-white font-mono block">Cara Autentikasi Menggunakan Library API KedaiAI</span>
           <p>Setelah melakukan top-up rupiah, copy API Key (baik key staging atau key produksi) ke codebase Anda. Modifikasi base URL client open-source Anda mengarah ke endpoint proxy kami:</p>
           <code className="block bg-slate-950 p-2.5 rounded border border-slate-900 text-[11px] text-cyan-300 font-mono mt-2 select-all">
-            baseUrl: "https://api.gatellm.id/v1"
+            baseUrl: "https://api.kedai_ai.id/v1"
           </code>
         </div>
       </div>

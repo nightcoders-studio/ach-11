@@ -236,7 +236,6 @@ export default function App() {
 
   const handleCreateKey = async (name: string): Promise<ApiKey> => {
     if (!supabaseToken) {
-      // Fallback local key generation untuk Demo Mode
       const mockKey: ApiKey = {
         id: `key_${Math.random().toString(36).substring(2, 10)}`,
         name: name,
@@ -245,11 +244,12 @@ export default function App() {
         createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
         lastUsedAt: "-"
       };
+      const rawKey = "glm_mock_" + Array.from({length: 24}, () => Math.random().toString(36)[2]).join('');
+      sessionStorage.setItem(`glm_raw_${mockKey.id}`, rawKey);
       setApiKeys(prev => [mockKey, ...prev]);
-      return { ...mockKey, rawKey: "glm_mock_" + Array.from({length: 24}, () => Math.random().toString(36)[2]).join('') };
+      return { ...mockKey, rawKey };
     }
     
-    // Panggil real API backend
     const res = await fetch(`${API_BASE_URL}/dashboard/api-keys`, {
       method: "POST",
       headers: {
@@ -271,6 +271,7 @@ export default function App() {
       lastUsedAt: "-"
     };
 
+    sessionStorage.setItem(`glm_raw_${data.id}`, data.raw_key);
     setApiKeys(prev => [newKey, ...prev]);
     return { ...newKey, rawKey: data.raw_key };
   };
@@ -438,7 +439,7 @@ export default function App() {
             </div>
             <div>
               <span className="font-mono font-black text-lg tracking-tight text-white flex items-center leading-none">
-                Gate<span className="text-cyan-400">LLM</span>
+                Kedai<span className="text-cyan-400">Ai</span>
               </span>
               <span className="text-[9px] text-slate-500 font-mono tracking-wider block uppercase mt-1">Console Panel v1.0</span>
             </div>
@@ -573,7 +574,7 @@ export default function App() {
         <header className="px-5 py-3.5 bg-slate-950 border-b border-slate-900 flex md:hidden items-center justify-between sticky top-0 z-40 shrink-0">
           <div className="flex items-center gap-2">
             <Terminal className="w-4 h-4 text-cyan-400" />
-            <span className="font-mono font-bold text-white text-sm">GateLLM Console</span>
+            <span className="font-mono font-bold text-white text-sm">KedaiAI Console</span>
           </div>
 
           <div className="flex items-center gap-3 text-xs font-mono text-slate-400">

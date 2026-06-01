@@ -1,4 +1,4 @@
-# 📋 Audit Report — Proyek Hackathon (GateLLM)
+# 📋 Audit Report — Proyek Hackathon (KedaiAI)
 > **Tanggal Audit:** 1 Juni 2026  
 > **Auditor:** Antigravity (AI Coding Assistant)  
 > **Repositori:** `git@github.com:nightcoders-studio/ach-11.git`  
@@ -9,7 +9,7 @@
 
 ## 1. Ringkasan Eksekutif
 
-**GateLLM** adalah sebuah **API Gateway** berbasis prepaid yang memungkinkan pengguna mengakses berbagai model AI terkemuka (Gemini, OpenAI, Anthropic, OpenRouter) menggunakan satu API Key terpadu dengan sistem saldo prabayar (top-up).
+**KedaiAI** adalah sebuah **API Gateway** berbasis prepaid yang memungkinkan pengguna mengakses berbagai model AI terkemuka (Gemini, OpenAI, Anthropic, OpenRouter) menggunakan satu API Key terpadu dengan sistem saldo prabayar (top-up).
 
 | Aspek | Status | Catatan |
 |-------|--------|---------|
@@ -326,7 +326,7 @@ git check-ignore -v backend/.env frontend/.env  # Harus ter-ignore
 
 ## 10. Kesimpulan
 
-Proyek **GateLLM** memiliki **arsitektur yang solid dan well-thought-out** untuk skala hackathon. Pemisahan concern antara backend FastAPI dan frontend React sudah jelas. Keamanan database (RLS, SHA-256, CORS, rate limiting) sudah diterapkan dengan tepat.
+Proyek **KedaiAI** memiliki **arsitektur yang solid dan well-thought-out** untuk skala hackathon. Pemisahan concern antara backend FastAPI dan frontend React sudah jelas. Keamanan database (RLS, SHA-256, CORS, rate limiting) sudah diterapkan dengan tepat.
 
 **Tindakan kritis sebelum push:**
 1. ✅ Buat `.gitignore` di root

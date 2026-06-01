@@ -1,4 +1,4 @@
-# Backend Task Tracker — GateLLM
+# Backend Task Tracker — KedaiAI
 > Referensi: [backend_plan.md](./backend_plan.md) | [PRD_Ridha_v2.md](./PRD_Ridha_v2.md)  
 > Update status: `[ ]` belum → `[/]` sedang dikerjakan → `[x]` selesai
 
@@ -281,7 +281,7 @@
   - `Cache-Control: no-cache`
   - `X-Accel-Buffering: no`
   - `Connection: keep-alive`
-  - `X-GateLLM-Request-ID: {request_id}`
+  - `X-KedaiAI-Request-ID: {request_id}`
 
 #### `GET /v1/models`
 
@@ -349,7 +349,7 @@
 
 ### `app/main.py`
 
-- [x] Inisialisasi `FastAPI(title="GateLLM API", version="1.0.0", description="...")`
+- [x] Inisialisasi `FastAPI(title="KedaiAI API", version="1.0.0", description="...")`
 - [x] Tambah `CORSMiddleware`:
   - `allow_origins = settings.allowed_origins.split(",")`
   - `allow_credentials = True`
@@ -367,7 +367,7 @@
   - `RequestValidationError` → return JSON `{error: "validation_error", detail}`
 - [x] Sentry init (jika `settings.sentry_dsn` tidak kosong)
 - [x] Logging config: `logging.basicConfig(level=settings.log_level)`
-- [x] `@app.on_event("startup")` — log "GateLLM backend started"
+- [x] `@app.on_event("startup")` — log "KedaiAI backend started"
 
 ---
 
@@ -484,8 +484,8 @@
 - [x] Semua environment variables di-set di Railway dashboard
 - [x] `SUPABASE_SERVICE_ROLE_KEY` tidak ada di repository (hanya di `.env` lokal + Railway)
 - [x] `allowed_origins` sudah include domain Vercel production
-- [x] Dockerfile sudah ditest secara lokal: `docker build -t gatellm-backend .`
-- [x] `docker run -p 8000:8000 gatellm-backend` → GET /health berhasil
+- [x] Dockerfile sudah ditest secara lokal: `docker build -t kedai_ai-backend .`
+- [x] `docker run -p 8000:8000 kedai_ai-backend` → GET /health berhasil
 
 ### Deployment Steps
 

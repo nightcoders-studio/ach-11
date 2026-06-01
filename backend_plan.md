@@ -1,4 +1,4 @@
-# Backend Implementation Plan — GateLLM
+# Backend Implementation Plan — KedaiAI
 > Berdasarkan: PRD_Ridha_v2.md  
 > Stack: **FastAPI (Python 3.11)** + **Supabase (PostgreSQL + Auth)** + **LiteLLM**  
 > Deploy Target: **Railway / Fly.io**  
@@ -439,7 +439,7 @@ Flow lengkap:
    Headers:
      - Cache-Control: no-cache
      - X-Accel-Buffering: no
-     - X-GateLLM-Request-ID: req_xxx
+     - X-KedaiAI-Request-ID: req_xxx
 ```
 
 #### `GET /v1/models`
@@ -459,11 +459,11 @@ Flow lengkap:
 ## Section 9 — Dashboard Router
 
 ### Tujuan
-Endpoint manajemen API Key dan top-up yang memerlukan Supabase JWT (bukan GateLLM API Key).
+Endpoint manajemen API Key dan top-up yang memerlukan Supabase JWT (bukan KedaiAI API Key).
 
 ### `app/routers/dashboard.py`
 
-> **Catatan Auth:** Dashboard endpoints menggunakan Supabase JWT token (dari frontend `supabase.auth.session()`), bukan GateLLM API Key.
+> **Catatan Auth:** Dashboard endpoints menggunakan Supabase JWT token (dari frontend `supabase.auth.session()`), bukan KedaiAI API Key.
 
 #### `POST /dashboard/api-keys`
 
@@ -524,7 +524,7 @@ async def chat_completions(...):
 
 ### Request ID Middleware
 
-Setiap request mendapat `X-GateLLM-Request-ID` header unik (UUID) untuk tracing.
+Setiap request mendapat `X-KedaiAI-Request-ID` header unik (UUID) untuk tracing.
 
 ### Supabase JWT Verification (Dashboard Endpoints)
 
@@ -600,7 +600,7 @@ return StreamingResponse(
         "Cache-Control": "no-cache",
         "X-Accel-Buffering": "no",      # Matikan Nginx buffering
         "Connection": "keep-alive",
-        "X-GateLLM-Request-ID": request_id,
+        "X-KedaiAI-Request-ID": request_id,
     }
 )
 ```
@@ -689,7 +689,7 @@ Structured logging dan error tracking sesuai PRD Section 16.
 ```python
 import logging, json
 
-logger = logging.getLogger("gatellm")
+logger = logging.getLogger("kedai_ai")
 
 # Log setiap request selesai
 logger.info(json.dumps({
@@ -748,7 +748,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
 | `OPENAI_API_KEY` | OpenAI API Key (opsional MVP) | `sk-proj-...` |
 | `ANTHROPIC_API_KEY` | Anthropic API Key (opsional MVP) | `sk-ant-...` |
 | `SECRET_KEY` | 64-char random string | `openssl rand -hex 32` |
-| `ALLOWED_ORIGINS` | CORS whitelist | `https://gatellm.com` |
+| `ALLOWED_ORIGINS` | CORS whitelist | `https://kedai_ai.com` |
 | `ENVIRONMENT` | `production` atau `development` | `production` |
 
 ### Urutan Deploy

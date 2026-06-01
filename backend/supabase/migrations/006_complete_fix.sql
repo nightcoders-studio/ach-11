@@ -1,5 +1,5 @@
 -- =============================================================================
--- GateLLM: COMPLETE DATABASE FIX SCRIPT
+-- KedaiAI: COMPLETE DATABASE FIX SCRIPT
 -- Jalankan ini di Supabase Dashboard > SQL Editor
 -- Fixes: wallet UPDATE policy, usage_logs schema, RPC function, schema cache
 -- =============================================================================
@@ -177,4 +177,4 @@ FROM information_schema.columns
 WHERE table_schema = 'public' AND table_name = 'usage_logs'
 GROUP BY table_name;
 
-SELECT 'GateLLM DB Fix COMPLETE - Schema updated, RPC created, Realtime enabled!' AS status;
+SELECT 'KedaiAI DB Fix COMPLETE - Schema updated, RPC created, Realtime enabled!' AS status;

@@ -1,5 +1,5 @@
 -- =============================================================================
--- GateLLM: Update Model Pricing agar perubahan saldo terlihat
+-- KedaiAI: Update Model Pricing agar perubahan saldo terlihat
 -- Jalankan di Supabase Dashboard > SQL Editor
 -- =============================================================================
 
