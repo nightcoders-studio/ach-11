@@ -81,7 +81,14 @@ export default function LandingPage({ onLogin }: LandingPageProps) {
         }
       }
     } catch (err: any) {
-      setErrorMsg(err.message || "Terjadi kesalahan sistem.");
+      const isRateLimit = err.message && (err.message.toLowerCase().includes("rate limit") || err.message.toLowerCase().includes("exceeded"));
+      if (isRateLimit) {
+        setErrorMsg(
+          "⚠️ Email rate limit exceeded! Supabase membatasi email tier gratis. Solusi instan: Masuk ke Supabase Dashboard -> Auth -> Providers -> Email -> Nonaktifkan 'Confirm email' (OFF) lalu klik Save. Setelah itu, Anda bisa Sign Up/Login secara instan tanpa perlu verifikasi email!"
+        );
+      } else {
+        setErrorMsg(err.message || "Terjadi kesalahan sistem.");
+      }
     } finally {
       setLoading(false);
     }

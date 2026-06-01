@@ -507,7 +507,7 @@
     -H "Content-Type: application/json" \
     -d '{"model": "gemini/gemini-1.5-flash", "messages": [{"role": "user", "content": "Halo"}], "stream": true}'
   ```
-- [ ] Cek Railway logs — tidak ada error saat startup
+- [x] Cek Railway logs — tidak ada error saat startup
 
 ---
 
@@ -515,16 +515,16 @@
 
 > Jalankan ini sebelum presentasi demo!
 
-- [ ] Daftar akun baru → cek tabel `profiles` dan `wallets` otomatis terbuat
-- [ ] Top-up simulasi Rp 50.000 ($3.00) → saldo bertambah di dashboard
-- [ ] Generate API Key → full key muncul sekali, prefix tersimpan di tabel
-- [ ] Kirim request via curl → SSE streaming berjalan, teks muncul per chunk
-- [ ] Cek dashboard → saldo berkurang sesuai biaya, log muncul di usage_logs
-- [ ] Revoke API Key → kirim request lagi → mendapat 403 `api_key_revoked`
-- [ ] Set saldo ke 0 → kirim request → mendapat 402 `insufficient_balance`
-- [ ] GET /health → `{"status": "healthy", ...}`
-- [ ] GET /docs → Swagger UI terbuka
-- [ ] Rate limit test: kirim 21 request dalam 1 menit → request ke-21 mendapat 429
+- [x] Daftar akun baru → cek tabel profiles dan wallets otomatis terbuat
+- [x] Top-up simulasi Rp 50.000 ($3.00) → saldo bertambah di dashboard
+- [x] Generate API Key → full key muncul sekali, prefix tersimpan di tabel
+- [x] Kirim request via curl → SSE streaming berjalan, teks muncul per chunk
+- [x] Cek dashboard → saldo berkurang sesuai biaya, log muncul di usage_logs
+- [x] Revoke API Key → kirim request lagi → mendapat 403 api_key_revoked
+- [x] Set saldo ke 0 → kirim request → mendapat 402 insufficient_balance
+- [x] GET /health → {"status": "healthy", ...}
+- [x] GET /docs → Swagger UI terbuka
+- [x] Rate limit test: kirim 21 request dalam 1 menit → request ke-21 mendapat 429
 
 ---
 
@@ -532,19 +532,19 @@
 
 | Section | Deskripsi | Status |
 |---------|-----------|--------|
-| 1 | Setup Project & Struktur | `[ ]` |
-| 2 | Database & Supabase | `[ ]` |
-| 3 | Config & DB Client | `[ ]` |
-| 4 | Pydantic Models | `[ ]` |
-| 5 | Auth Service | `[ ]` |
-| 6 | Billing Service | `[ ]` |
-| 7 | LLM Service | `[ ]` |
-| 8 | Gateway Router | `[ ]` |
-| 9 | Dashboard Router | `[ ]` |
-| 10 | main.py & Middleware | `[ ]` |
-| 11 | SSE Streaming Edge Cases | `[ ]` |
-| 12 | Error Handling & Logging | `[ ]` |
-| 13 | Testing | `[ ]` |
-| 14 | Monitoring | `[ ]` |
-| 15 | Deployment | `[ ]` |
-| Demo | Pre-Demo Manual Test | `[ ]` |
+| 1 | Setup Project & Struktur | `[x]` |
+| 2 | Database & Supabase | `[x]` |
+| 3 | Config & DB Client | `[x]` |
+| 4 | Pydantic Models | `[x]` |
+| 5 | Auth Service | `[x]` |
+| 6 | Billing Service | `[x]` |
+| 7 | LLM Service | `[x]` |
+| 8 | Gateway Router | `[x]` |
+| 9 | Dashboard Router | `[x]` |
+| 10 | main.py & Middleware | `[x]` |
+| 11 | SSE Streaming Edge Cases | `[x]` |
+| 12 | Error Handling & Logging | `[x]` |
+| 13 | Testing | `[x]` |
+| 14 | Monitoring | `[x]` |
+| 15 | Deployment | `[x]` |
+| Demo | Pre-Demo Manual Test | `[x]` |

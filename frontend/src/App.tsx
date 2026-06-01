@@ -179,7 +179,19 @@ export default function App() {
   };
 
   const handleCreateKey = async (name: string): Promise<ApiKey> => {
-    if (!supabaseToken) throw new Error("Unauthenticated request");
+    if (!supabaseToken) {
+      // Fallback local key generation untuk Demo Mode
+      const mockKey: ApiKey = {
+        id: `key_${Math.random().toString(36).substring(2, 10)}`,
+        name: name,
+        keyMasked: "glm_mock_" + Math.random().toString(36).substring(2, 6) + "••••••••••••",
+        status: "Active",
+        createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        lastUsedAt: "-"
+      };
+      setApiKeys(prev => [mockKey, ...prev]);
+      return { ...mockKey, rawKey: "glm_mock_" + Array.from({length: 24}, () => Math.random().toString(36)[2]).join('') };
+    }
     
     // Panggil real API backend
     const res = await fetch(`${API_BASE_URL}/dashboard/api-keys`, {
@@ -208,7 +220,11 @@ export default function App() {
   };
 
   const handleRevokeKey = async (id: string) => {
-    if (!supabaseToken) return;
+    if (!supabaseToken) {
+      // Fallback local key revocation untuk Demo Mode
+      setApiKeys(prev => prev.map(k => k.id === id ? { ...k, status: "Revoked" } : k));
+      return;
+    }
 
     await fetch(`${API_BASE_URL}/dashboard/api-keys/${id}`, {
       method: "DELETE",
@@ -221,7 +237,26 @@ export default function App() {
   };
 
   const handleTopUp = async (amount: number, method: string) => {
-    if (!supabaseToken || !session) return;
+    if (!session) return;
+
+    if (!supabaseToken) {
+      // Fallback local balance top-up untuk Demo Mode
+      setSession({
+        ...session,
+        balance: session.balance + amount
+      });
+
+      const newTr: Transaction = {
+        id: `TR-${Date.now().toString(36).toUpperCase()}`,
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        description: `Top Up via ${method}`,
+        amount: amount,
+        status: "Success",
+        method: method
+      };
+      setTransactions(prev => [newTr, ...prev]);
+      return;
+    }
 
     // nominal slider ke USD conversion simulator rate
     const usdAmount = amount / 16000;

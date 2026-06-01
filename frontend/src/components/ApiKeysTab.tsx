@@ -17,7 +17,7 @@ import { ApiKey } from "../types";
 
 interface ApiKeysTabProps {
   apiKeys: ApiKey[];
-  onCreateKey: (name: string) => ApiKey;
+  onCreateKey: (name: string) => Promise<ApiKey>;
   onRevokeKey: (id: string) => void;
 }
 
@@ -29,19 +29,24 @@ export default function ApiKeysTab({ apiKeys, onCreateKey, onRevokeKey }: ApiKey
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [copiedRaw, setCopiedRaw] = useState(false);
 
-  const handleGenerateKey = (e: React.FormEvent) => {
+  const handleGenerateKey = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!keyName.trim()) return;
 
-    const key = onCreateKey(keyName);
-    
-    // Show the raw generated key once inside the modal!
-    setNewlyCreatedKey({
-      ...key,
-      rawKey: key.rawKey || `glm_prod_` + Array.from({length: 24}, () => Math.random().toString(36)[2]).join('')
-    });
-    
-    setKeyName("");
+    try {
+      const key = await onCreateKey(keyName);
+      
+      // Show the raw generated key once inside the modal!
+      setNewlyCreatedKey({
+        ...key,
+        rawKey: key.rawKey || `glm_prod_` + Array.from({length: 24}, () => Math.random().toString(36)[2]).join('')
+      });
+      
+      setKeyName("");
+    } catch (err) {
+      console.error("Gagal membuat API Key:", err);
+      alert("Gagal membuat API Key. Silakan coba kembali.");
+    }
   };
 
   const copyKeyText = (text: string, id: string) => {

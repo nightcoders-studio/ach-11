@@ -149,15 +149,20 @@ async def health_check():
     """
     Kesehatan sistem Gateway.
     """
-    db_ok = "available"
-    try:
-        supabase.table("model_pricing").select("id").limit(1).execute()
-    except Exception:
-        db_ok = "unavailable"
+    db_ok = "unavailable"
+    # Coba beberapa tabel — graceful jika migrations belum dijalankan
+    for table_name in ["model_pricing", "api_keys", "wallets", "profiles"]:
+        try:
+            supabase.table(table_name).select("id").limit(1).execute()
+            db_ok = "available"
+            break
+        except Exception:
+            continue
 
     providers = get_available_providers()
     providers["supabase_db"] = db_ok
 
+    # Degraded jika DB tidak tersambung, tapi OpenRouter tetap bisa serve
     status = "healthy" if db_ok == "available" else "degraded"
 
     return HealthResponse(
